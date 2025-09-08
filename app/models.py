@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 
 # Create your models here.
 class Category(models.Model):
-    id = models.UUIDField(primary_key = True, default = uuid.uuidd4, editable= False)
+    id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable= False)
     name = models.CharField(max_length = 150)
     description = models.CharField(max_length = 300)
     slug = models.SlugField(unique = True)
@@ -33,7 +33,7 @@ class Module(models.Model):
     order = models.IntegerField()
 
 
-class Resource(models.model):
+class Resource(models.Model):
     id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
     title = models.CharField()
     url = models.URLField()
