@@ -7,6 +7,15 @@ class HomePageView(TemplateView):
     template_name = 'pages/home.html'
 
 
+class CoursesPageView(TemplateView):
+    template_name = 'pages/courses.html'
+
+
+class CategoriesPageView(TemplateView):
+    template_name =  'pages/categories.html'
+
+    
+
 
     
 

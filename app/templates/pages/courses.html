@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Cursos - PyAcademy</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
+    <style>
+        body { font-family: 'Roboto', Arial, sans-serif; background: #f5f6fa; color: #222; margin: 0; }
+        header { background: #2980b9; color: #fff; padding: 16px 0; }
+        nav { display: flex; justify-content: space-between; align-items: center; max-width: 1100px; margin: 0 auto; }
+        .logo { font-size: 1.8em; font-weight: 700; letter-spacing: 2px; }
+        .nav-links a { color: #fff; text-decoration: none; margin: 0 15px; font-size: 1.08em; }
+        .courses-section { max-width: 1100px; margin: 40px auto; }
+        .courses-title { font-size: 2em; color: #2980b9; margin-bottom: 24px; text-align: center; }
+        .courses-list { display: flex; flex-wrap: wrap; gap: 28px; justify-content: center; }
+        .footer { background: #222; color: #fff; padding: 22px 0; text-align: center; margin-top: 48px; }
+        @media (max-width: 900px) {
+            .courses-list { flex-direction: column; align-items: center; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">PyAcademy</div>
+            <div class="nav-links">
+                <a href="{% url 'categories' %}">Categorías</a>    
+                <a href="#">Mi cuenta</a>
+                <a href="#">Carrito</a>
+            </div>
+        </nav>
+    </header>
+
+    <section class="courses-section">
+        <div class="courses-title">Todos los cursos</div>
+        <div class="courses-list">
+            <!-- Aquí irán los cursos generados dinámicamente por Django -->
+            {% comment %} Cuando tengas el modelo y los cursos en el admin, aquí se renderizarán con un for: {% endcomment %}
+            {# Ejemplo futuro: 
+            {% for course in courses %}
+                <div class="course-card">
+                    <!-- ...contenido del curso... -->
+                </div>
+            {% endfor %}
+            #}
+        </div>
+    </section>
+
+    <footer class="footer">
+        PyAcademy © 2025 · Contacto: info@pyacademy.com · Síguenos en redes sociales
+    </footer>
+</body>
+</html>

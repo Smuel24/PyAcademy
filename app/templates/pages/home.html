@@ -39,7 +39,7 @@
             <div class="logo">PyAcademy</div>
             <div class="nav-links">
  
-                <a href="#">Categorías</a>
+                <a href="{% url 'categories' %}">Categorías</a>
                 <a href="#">Mi cuenta</a>
                 <a href="#">Carrito</a>
             </div>
@@ -48,7 +48,7 @@
     <section class="banner">
         <h1>¡Bienvenido a PyAcademy!</h1>
         <p>El mejor marketplace para aprender Python, desarrollo web y mucho más.</p>
-        <a class="btn-main" href="#">Explora los cursos</a>
+        <a class="btn-main" href= "{% url 'cursos' %}">Explora los cursos</a>
     </section>
 
     <section class="courses-section">
