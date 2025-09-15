@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Cursos - PyAcademy</title>
+    <title>{{ title }}</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
     <style>
         body { font-family: 'Roboto', Arial, sans-serif; background: #f5f6fa; color: #222; margin: 0; }
@@ -74,7 +74,7 @@
     </header>
 
     <section class="courses-section">
-        <div class="courses-title">Todos los cursos</div>
+        <div class="courses-title">{{ title }}</div>
         
         <!-- Espacio de búsqueda -->
         <form class="search-bar" method="get">
@@ -88,11 +88,14 @@
                     {% if course.img %}
                         <img src="{{ course.img.url }}" alt="Portada de {{ course.title }}">
                     {% endif %}
-                    <div class="course-title">{{ course.title }}</div>
+                    <div class="course-title">
+                        <a href="{% url 'showcourse' course.slug %}" style="text-decoration:none;color:#222;">
+                            {{ course.title }}
+                        </a>
+                    </div>
                     <div class="course-level">Nivel: {{ course.level }}</div>
                     <div class="course-category">Categoría: {{ course.category.name }}</div>
                     <div class="course-price">${{ course.certification_price }}</div>
-                    <!-- Puedes agregar más info aquí -->
                 </div>
             {% empty %}
                 <div style="font-size:1.15em; color:#777; text-align:center; width:100%;">
