@@ -1,11 +1,7 @@
 from django.contrib import admin
 from .models import Course, Category
 
-
-
 # Register your models here.
-admin.site.register(Course)
-admin.site.register(Category)
 
 class CourseInLine(admin.TabularInline):
     model = Course
@@ -17,11 +13,9 @@ class CategoryAdmin(admin.ModelAdmin):
     inlines = [CourseInLine]
 
 class CourseAdmin(admin.ModelAdmin):
-    list_display = ('title', 'level', 'category', 'certiication_price')
-    search_field = ('title')
+    list_display = ('title', 'level', 'category', 'certification_price')
+    search_fields = ('title',)  # Cambia 'search_field' por 'search_fields' y ponlo como tupla
     list_filter = ('level', 'category')
 
-admin.site.register(Course, CourseAdmin)  
-
-
-    
+admin.site.register(Category, CategoryAdmin)
+admin.site.register(Course, CourseAdmin)

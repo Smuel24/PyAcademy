@@ -55,10 +55,19 @@ class CategoryListView(View):
     template_name = 'category/categories.html'
 
     def get(self, request):
-        categories = Category.objects.all()
+        search_query = request.GET.get('q', '')  # Agrega el parámetro de búsqueda
+        if search_query:
+            categories = Category.objects.filter(
+                name__icontains=search_query
+            ) | Category.objects.filter(
+                description__icontains=search_query
+            )
+        else:
+            categories = Category.objects.all()
         context = {
             'categories': categories,
-            'title': 'Todas las Categorías'
+            'title': 'Todas las Categorías',
+            'search_query': search_query
         }
         return render(request, self.template_name, context)
 
