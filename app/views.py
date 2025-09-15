@@ -1,5 +1,6 @@
-from django.shortcuts import render, redirect, get_list_or_404
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import TemplateView, ListView, View
+from django.http import HttpResponseRedirect
 from .models import Course
 
 # Create your views here.
@@ -37,3 +38,16 @@ class CourseIndexView(View):
 
 class CoureShowView(View):
     Template_name = 'course/showcourse.html'
+
+    def get(self, request): 
+
+            try:
+                course_id = int(id)
+                if course_id < 1:
+                    raise ValueError("course id must be 1 or greater")
+                course = get_object_or_404(Course, pk = course_id)
+            except(ValueError, IndexError):
+                return HttpResponseRedirect
+                
+                
+            
