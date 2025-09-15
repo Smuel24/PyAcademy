@@ -1,0 +1,14 @@
+<h1>{{ category.name }}</h1>
+<p>{{ category.description }}</p>
+<h2>Cursos en esta categoría:</h2>
+<ul>
+{% for course in courses %}
+    <li>
+        <a href="{% url 'course_detail' slug=course.slug %}">
+            {{ course.title }}
+        </a>
+    </li>
+{% empty %}
+    <li>No hay cursos en esta categoría.</li>
+{% endfor %}
+</ul>

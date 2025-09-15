@@ -12,7 +12,24 @@
         .nav-links a { color: #fff; text-decoration: none; margin: 0 15px; font-size: 1.08em; }
         .categories-section { max-width: 1100px; margin: 40px auto; }
         .categories-title { font-size: 2em; color: #2980b9; margin-bottom: 24px; text-align: center; }
+        .search-bar { display: flex; justify-content: center; margin-bottom: 30px; }
+        .search-bar input[type="text"] {
+            padding: 8px 14px; border: 1px solid #bbb; border-radius: 5px 0 0 5px;
+            font-size: 1em; outline: none; width: 270px;
+        }
+        .search-bar button {
+            padding: 8px 16px; background: #2980b9; color: #fff; border: none;
+            border-radius: 0 5px 5px 0; font-size: 1em; cursor: pointer;
+        }
         .categories-list { display: flex; flex-wrap: wrap; gap: 28px; justify-content: center; }
+        .category-card {
+            background: #fff; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+            padding: 24px; min-width: 220px; max-width: 280px;
+            transition: box-shadow 0.2s;
+        }
+        .category-card:hover { box-shadow: 0 4px 16px rgba(41,128,185,0.18); }
+        .category-title { font-size: 1.25em; color: #2980b9; font-weight: 700; margin-bottom: 8px; }
+        .category-desc { font-size: 1em; color: #444; margin-bottom: 12px; }
         .footer { background: #222; color: #fff; padding: 22px 0; text-align: center; margin-top: 48px; }
         @media (max-width: 900px) {
             .categories-list { flex-direction: column; align-items: center; }
@@ -32,17 +49,21 @@
     </header>
 
     <section class="categories-section">
-        <div class="categories-title">Todas las categorías</div>
+        <div class="categories-title">{{ title }}</div>
+        <form class="search-bar" method="get">
+            <input type="text" name="q" placeholder="Buscar categoría..." value="{{ search_query }}">
+            <button type="submit">Buscar</button>
+        </form>
         <div class="categories-list">
-            <!-- Aquí irán las categorías generadas dinámicamente por Django -->
-            {% comment %} Cuando tengas el modelo y las categorías en el admin, aquí se renderizarán con un for: {% endcomment %}
-            {# Ejemplo futuro:
             {% for category in categories %}
                 <div class="category-card">
-                    <!-- ...contenido de la categoría... -->
+                    <div class="category-title">{{ category.name }}</div>
+                    <div class="category-desc">{{ category.description }}</div>
+                    <a href="{% url 'category_detail' slug=category.slug %}">Ver cursos</a>
                 </div>
+            {% empty %}
+                <div>No se encontraron categorías.</div>
             {% endfor %}
-            #}
         </div>
     </section>
 

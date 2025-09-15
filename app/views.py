@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import TemplateView, ListView, View
 from django.http import HttpResponseRedirect
-from .models import Course
+from .models import Course, Category
 
 # Create your views here.
 
@@ -50,4 +50,29 @@ class CoureShowView(View):
                 return HttpResponseRedirect
                 
                 
+
+class CategoryListView(View):
+    template_name = 'category/categories.html'
+
+    def get(self, request):
+        categories = Category.objects.all()
+        context = {
+            'categories': categories,
+            'title': 'Todas las Categorías'
+        }
+        return render(request, self.template_name, context)
+
+class CategoryDetailView(View):
+    template_name = 'category/category_detail.html'
+
+    def get(self, request, slug):
+        category = get_object_or_404(Category, slug=slug)
+        # Los cursos de la categoría se acceden por: category.cursos.all()
+        courses = category.cursos.all()
+        context = {
+            'category': category,
+            'courses': courses,
+            'title': f'Categoría: {category.name}'
+        }
+        return render(request, self.template_name, context)
             
