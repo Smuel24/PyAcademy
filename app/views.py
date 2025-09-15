@@ -14,6 +14,10 @@ class CoursesPageView(TemplateView):
 class CategoriesPageView(TemplateView):
     template_name =  'pages/categories.html'
 
+
+class CartPageView(TemplateView):
+    template_name = 'pages/cart.html'
+
     
 
 
