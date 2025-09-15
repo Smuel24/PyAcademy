@@ -18,6 +18,10 @@ class CategoriesPageView(TemplateView):
 class CartPageView(TemplateView):
     template_name = 'pages/cart.html'
 
+
+class ProfilePageView(TemplateView):
+    template_name = 'pages/Profile.html'
+
     
 
 
