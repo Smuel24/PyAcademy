@@ -113,15 +113,15 @@ class CategoryListView(View):
 class CategoryDetailView(View):
     template_name = 'category/category_detail.html'
     def get(self, request, slug):
+        from .models import Category, Course
         category = get_object_or_404(Category, slug=slug)
-        # Si tienes la relación, úsala así:
-        # courses = category.courses.all()
+        courses = Course.objects.filter(category=category)
         context = {
             'category': category,
-            # 'courses': courses, # descomenta si tienes la relación
+            'courses': courses,
             'title': f'Categoría: {category.name}',
         }
-
+        return render(request, self.template_name, context)
 
 @login_required
 def course_content_view(request, slug):
