@@ -80,12 +80,19 @@ class CoursesPageView(TemplateView):
 
 
 class CourseShowView(View):
-    template_name = 'course/showcourse.html'
-
     def get(self, request, slug):
         course = get_object_or_404(Course, slug=slug)
-        context = {'course': course}
-        return render(request, self.template_name, context)
+        user_has_course = False
+        if request.user.is_authenticated:
+            user_has_course = Payment.objects.filter(
+                usuario=request.user,
+                curso=course,
+                state='PAID'
+            ).exists()
+        return render(request, 'course/showcourse.html', {
+            'course': course,
+            'user_has_course': user_has_course
+        })
                 
                 
 
@@ -141,10 +148,6 @@ def add_to_cart(request, course_id):
 @login_required
 def course_content_view(request, slug):
     course = get_object_or_404(Course, slug=slug)
-    # CAMPO CORRECTO: curso, usuario, state
-    has_paid = Payment.objects.filter(curso=course, usuario=request.user, state='PAID').exists()
-    if not has_paid:
-        return redirect('course_detail', slug=slug)
     progress_obj, created = Progress.objects.get_or_create(
         curso=course,
         usuario=request.user,
@@ -153,16 +156,13 @@ def course_content_view(request, slug):
     show_certificate = progress_obj.porcentaje >= 100
     certificate = None
     if show_certificate:
-        payment = Payment.objects.filter(curso=course, usuario=request.user, state='PAID').first()
-        if payment:
-            certificate = Certification.objects.filter(payment=payment).first()
-    return render(request, 'course/course_view.html', {
+        certificate = Certification.objects.filter(curso=course, usuario=request.user).first()
+    return render(request, 'course/course_content.html', {   # <-- usa el template correcto AQUÍ
         'course': course,
         'progress': progress_obj.porcentaje,
         'show_certificate': show_certificate,
-        'certificate': certificate,
+        'certificate': certificate
     })
-
 
 @login_required
 def update_progress(request, slug):

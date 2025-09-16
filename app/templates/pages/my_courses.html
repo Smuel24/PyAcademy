@@ -3,7 +3,7 @@
     <ul>
     {% for curso in cursos %}
         <li>
-            {{ curso.title }} - <a href="{% url 'course_view' curso.slug %}">Ver contenido</a>
+            <a href="{% url 'course_content' curso.slug %}">Ver contenido</a>
         </li>
     {% endfor %}
     </ul>
