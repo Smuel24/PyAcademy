@@ -93,7 +93,7 @@ class CategoryListView(View):
     template_name = 'pages/categories.html'  
 
     def get(self, request):
-        search_query = request.GET.get('q', '')  # Agrega el parámetro de búsqueda
+        search_query = request.GET.get('q', '')  #
         if search_query:
             categories = Category.objects.filter(
                 name__icontains=search_query
