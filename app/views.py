@@ -1,10 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import TemplateView, ListView, View
 from django.http import HttpResponseRedirect
-from .models import Course, Category, Payment
+from .models import Course, Category, Payment, Progress, Certification, Cart
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
-
+from django.utils import timezone
 
 # Create your views here.
 
@@ -143,3 +143,82 @@ def add_to_cart(request, course_id):
     cart_item, created = Cart.objects.get_or_create(user=request.user, course=course)
     # Redirige al carrito
     return redirect('cart') 
+
+
+
+@login_required
+def course_content_view(request, slug):
+    course = get_object_or_404(Course, slug=slug)
+    progress_obj, created = Progress.objects.get_or_create(
+          curso=course,
+        usuario=request.user,
+        defaults={'porcentaje': 0}
+        )
+    show_certificate = progress_obj.porcentaje >= 100
+    certificate = None
+    if show_certificate:
+        # Busca si ya existe el certificado
+        payment = Payment.objects.filter(curso=course, usuario=request.user, state='PAID').first()
+        if payment:
+            certificate = Certification.objects.filter(payment=payment).first()
+    return render(request, 'course/course_view.html', {
+        'course': course,
+        'progress': progress_obj.porcentaje,
+        'show_certificate': show_certificate,
+        'certificate': certificate
+    })
+
+
+@login_required
+def update_progress(request, slug):
+    course = get_object_or_404(Course, slug=slug)
+    if request.method == 'POST':
+        progress_obj, created = Progress.objects.get_or_create(
+            curso=course,
+            usuario=request.user,
+            defaults={'porcentaje': 0}
+        )
+        nuevo_porcentaje = float(request.POST.get('porcentaje', 0))
+        progress_obj.porcentaje = min(100, max(0, nuevo_porcentaje))
+        progress_obj.save()
+        if progress_obj.porcentaje >= 100:
+            payment = Payment.objects.filter(curso=course, usuario=request.user, state='PAID').first()
+            if payment:
+                from .models import Certification
+                if not Certification.objects.filter(payment=payment).exists():
+                    import random
+                    unique_code = f"CERT-{random.randint(100000,999999)}"
+                    Certification.objects.create(
+                        payment=payment,
+                        unique_code=unique_code,
+                        emition_date=timezone.now()
+                    )
+        return redirect('course_view', slug=slug)
+    
+
+
+@login_required
+def download_certificate(request, cert_id):
+    certificate = get_object_or_404(Certification, id=cert_id)
+    return render(request, 'course/certificate.html', {
+        'certificate': certificate,
+        'user': request.user,
+        'course': certificate.payment.curso
+    })
+
+
+@login_required
+def pay_cart(request):
+    if request.method == 'POST':
+        cart_items = Cart.objects.filter(user=request.user).select_related('course')
+        for item in cart_items:
+            Payment.objects.create(
+                curso=item.course,
+                usuario=request.user,
+                amount=item.course.certification_price,
+                date=timezone.now(),
+                transaction_id=f"TX-{timezone.now().timestamp()}-{item.course.id}",
+                state='PAID'
+            )
+        cart_items.delete()
+        return redirect('cart')

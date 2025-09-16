@@ -67,7 +67,7 @@
                 {% csrf_token %}
                 <button type="submit" class="clear-btn">Vaciar carrito</button>
             </form>
-            <form method="post" action="#">
+            <form method="post" action="{% url 'cart_pay' %}">
                 {% csrf_token %}
                 <button type="submit" class="pay-btn">Pagar</button>
             </form>
