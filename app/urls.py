@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import (HomePageView, CoursesPageView, CategoryListView, CartPageView, ProfilePageView, 
                     CourseShowView, CategoryDetailView, CartRemoveAllView, add_to_cart, course_content_view, 
-                    update_progress, download_certificate, pay_cart)
+                    update_progress, download_certificate, pay_cart, my_courses)
 
 urlpatterns = [
     path('', HomePageView.as_view(), name='home'),
@@ -17,4 +17,5 @@ urlpatterns = [
     path('curso/<slug:slug>/progreso/', update_progress, name='update_progress'),
     path('certificado/<uuid:cert_id>/', download_certificate, name='download_certificate'),
     path('carrito/pagar/', pay_cart, name='cart_pay'),
+    path('mis-cursos/', my_courses, name='my_courses'),
 ]

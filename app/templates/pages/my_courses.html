@@ -1,0 +1,12 @@
+<h2>{{ title }}</h2>
+{% if cursos %}
+    <ul>
+    {% for curso in cursos %}
+        <li>
+            {{ curso.title }} - <a href="{% url 'course_view' curso.slug %}">Ver contenido</a>
+        </li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No has comprado ningún curso aún.</p>
+{% endif %}

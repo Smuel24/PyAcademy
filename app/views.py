@@ -123,14 +123,6 @@ class CategoryDetailView(View):
         }
         return render(request, self.template_name, context)
 
-@login_required
-def course_content_view(request, slug):
-    course = get_object_or_404(Course, slug=slug)
-    
-    has_paid = Payment.objects.filter(user=request.user, course=course, status='paid').exists()
-    if not has_paid:
-        return redirect('show_course', slug=slug)
-    return render(request, 'course/course_content.html', {'course': course})
 
 
 @login_required
@@ -149,15 +141,18 @@ def add_to_cart(request, course_id):
 @login_required
 def course_content_view(request, slug):
     course = get_object_or_404(Course, slug=slug)
+    # CAMPO CORRECTO: curso, usuario, state
+    has_paid = Payment.objects.filter(curso=course, usuario=request.user, state='PAID').exists()
+    if not has_paid:
+        return redirect('course_detail', slug=slug)
     progress_obj, created = Progress.objects.get_or_create(
-          curso=course,
+        curso=course,
         usuario=request.user,
         defaults={'porcentaje': 0}
-        )
+    )
     show_certificate = progress_obj.porcentaje >= 100
     certificate = None
     if show_certificate:
-        # Busca si ya existe el certificado
         payment = Payment.objects.filter(curso=course, usuario=request.user, state='PAID').first()
         if payment:
             certificate = Certification.objects.filter(payment=payment).first()
@@ -165,7 +160,7 @@ def course_content_view(request, slug):
         'course': course,
         'progress': progress_obj.porcentaje,
         'show_certificate': show_certificate,
-        'certificate': certificate
+        'certificate': certificate,
     })
 
 
@@ -222,3 +217,16 @@ def pay_cart(request):
             )
         cart_items.delete()
         return redirect('cart')
+    
+
+@login_required
+def my_courses(request):
+    # Buscar todos los pagos exitosos del usuario
+    pagos = Payment.objects.filter(usuario=request.user, state='PAID').select_related('curso')
+    # Extraer los cursos únicos de esos pagos
+    cursos = list({pago.curso.id: pago.curso for pago in pagos}.values())
+    context = {
+        'cursos': cursos,
+        'title': 'Mis Cursos'
+    }
+    return render(request, 'pages/my_courses.html', context)
