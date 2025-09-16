@@ -5,6 +5,7 @@
     <title>{{ course.title }} | PyAcademy</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
     <style>
+        /* Usa los mismos estilos que en showcourse.html y home.html */
         body { font-family: 'Roboto', Arial, sans-serif; background: #f5f6fa; color: #222; margin: 0; }
         header { background: #2980b9; color: #fff; padding: 16px 0; }
         nav { display: flex; justify-content: space-between; align-items: center; max-width: 1100px; margin: 0 auto; }
@@ -15,12 +16,19 @@
         .course-img { max-width: 300px; border-radius: 8px; box-shadow: 0 2px 8px #2980b940; }
         .course-info { flex: 1; min-width: 250px; }
         .course-title { font-size: 2em; color: #2980b9; margin: 0 0 14px 0; font-weight: 700; }
-        .course-meta { margin-bottom: 14px; }
         .course-meta span { display: inline-block; margin-right: 18px; color: #555; font-size: 1.05em; }
-        .course-price { color: #27ae60; font-weight: bold; font-size: 1.18em; }
         .course-desc { font-size: 1.13em; color: #222; margin-bottom: 14px; }
+        .modules-section { margin-top: 24px; }
+        .modules-title { font-size: 1.35em; font-weight: bold; color: #222; margin-bottom: 18px; }
+        .module { background: #f0f4fa; border-radius: 8px; margin-bottom: 22px; padding: 18px 18px 12px 18px; }
+        .module-title { font-size: 1.15em; color: #2980b9; margin-bottom: 6px; font-weight: 600; }
+        .module-desc { color: #444; margin-bottom: 8px; }
+        ul { margin: 0; padding-left: 22px; }
+        li { margin-bottom: 8px; font-size: 1em; color: #222; }
+        .resource-type { font-weight: bold; color: #27ae60; }
+        .resource-title { color: #2980b9; font-weight: 500; text-decoration: underline; }
+        .resource-meta { color: #555; font-size: 0.97em; margin-left: 8px; }
         .footer { background: #222; color: #fff; padding: 22px 0; text-align: center; margin-top: 48px; }
-        .btn-main { background: #27ae60; color: #fff; padding: 13px 28px; border-radius: 7px; text-decoration: none; font-size: 1.1em; border: none; cursor: pointer; margin-top: 18px; }
         @media (max-width: 900px) {
             .container { padding: 18px 6vw; }
             .course-header { flex-direction: column; gap: 18px; }
@@ -50,14 +58,33 @@
                     <span><b>Categoría:</b> {{ course.category.name }}</span>
                     <span><b>Nivel:</b> {{ course.level }}</span>
                     <span><b>Duración:</b> {{ course.duration }}</span>
-                    <span class="course-price">Precio certificado: ${{ course.certification_price }}</span>
                 </div>
                 <div class="course-desc"><b>Descripción:</b> {{ course.description }}</div>
-                <form action="{% url 'cart_add' course.id %}" method="post">
-                    {% csrf_token %}
-                    <button type="submit" class="btn-main">Agregar al carrito</button>
-                </form>
             </div>
+        </div>
+        <div class="modules-section">
+            <div class="modules-title">Contenido del curso</div>
+            {% for module in course.modules.all %}
+                <div class="module">
+                    <div class="module-title">{{ module.title }}</div>
+                    <div class="module-desc">{{ module.descripcion }}</div>
+                    <ul>
+                        {% for resource in module.resources.all %}
+                            <li>
+                                <span class="resource-type">{{ resource.type }}:</span>
+                                <a class="resource-title" href="{{ resource.url }}">{{ resource.title }}</a>
+                                {% if resource.duration %}
+                                    <span class="resource-meta">(Duración: {{ resource.duration }} min)</span>
+                                {% endif %}
+                            </li>
+                        {% empty %}
+                            <li>No hay recursos en este módulo.</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% empty %}
+                <div>No hay módulos para este curso.</div>
+            {% endfor %}
         </div>
     </div>
     <footer class="footer">

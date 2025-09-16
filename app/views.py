@@ -1,7 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import TemplateView, ListView, View
 from django.http import HttpResponseRedirect
-from .models import Course, Category
+from .models import Course, Category, Payment
+from django.views.decorators.http import require_POST
+from django.contrib.auth.decorators import login_required
+
 
 # Create your views here.
 
@@ -17,33 +20,46 @@ class CartPageView(View):
     template_name = 'pages/cart.html'
 
     def get(self, request):
-        cart_courses = {}
-        cart_courses_data = request.session.get('cart_courses_data', {})
+        # Cursos disponibles
+        products = {}
+        for course in Course.objects.all():
+            products[str(course.id)] = {
+                'name': course.title,
+                'price': course.certification_price
+            }
 
-        for key, course in Course.objects.in_bulk(cart_courses_data.keys()).items():
-            cart_courses[key] = course
+        # Cursos en el carrito del usuario
+        cart_products = {}
+        if request.user.is_authenticated:
+            from .models import Cart
+            cart_items = Cart.objects.filter(user=request.user).select_related('course')
+            for item in cart_items:
+                cart_products[str(item.course.id)] = {
+                    'name': item.course.title,
+                    'price': item.course.certification_price
+                }
 
         context = {
             'title': 'Carrito de compras',
-            'cart_courses': cart_courses,
+            'products': products,
+            'cart_products': cart_products,
         }
         return render(request, self.template_name, context)
 
-    def post(self, request, course_id):
-        cart_courses_data = request.session.get('cart_courses_data', {})  # <--- usa el mismo nombre
-        cart_courses_data[str(course_id)] = course_id
-        request.session['cart_courses_data'] = cart_courses_data  # <--- usa el mismo nombre
-
-        return redirect('cart')    
-
-
 class CartRemoveAllView(View):
-    def post(self, request):
-        if 'cart_courses_data' in request.session:
-            del request.session['cart_courses_data']
+    template_name = 'pages/cart.html'
 
-        return redirect('cart')
-
+    def get(self, request):
+        # Mostrar los cursos en el carrito del usuario autenticado
+        cart_items = []
+        if request.user.is_authenticated:
+            from .models import Cart
+            cart_items = Cart.objects.filter(user=request.user).select_related('course')
+        context = {
+            'title': 'Carrito de compras',
+            'cart_items': cart_items,
+        }
+        return render(request, self.template_name, context)
 
 class ProfilePageView(TemplateView):
     template_name = 'pages/Profile.html'
@@ -105,3 +121,25 @@ class CategoryDetailView(View):
             # 'courses': courses, # descomenta si tienes la relación
             'title': f'Categoría: {category.name}',
         }
+
+
+@login_required
+def course_content_view(request, slug):
+    course = get_object_or_404(Course, slug=slug)
+    
+    has_paid = Payment.objects.filter(user=request.user, course=course, status='paid').exists()
+    if not has_paid:
+        return redirect('show_course', slug=slug)
+    return render(request, 'course/course_content.html', {'course': course})
+
+
+@login_required
+@require_POST
+def add_to_cart(request, course_id):
+    # Tu modelo de carrito debería tener user y course
+    from .models import Cart, Course
+    course = get_object_or_404(Course, id=course_id)
+    # Evita duplicados
+    cart_item, created = Cart.objects.get_or_create(user=request.user, course=course)
+    # Redirige al carrito
+    return redirect('cart') 
