@@ -49,7 +49,7 @@ class CartPageView(View):
 class CartRemoveAllView(View):
     template_name = 'pages/cart.html'
 
-    def get(self, request):
+    def post(self, request):
         # Mostrar los cursos en el carrito del usuario autenticado
         cart_items = []
         if request.user.is_authenticated:
