@@ -18,4 +18,5 @@ urlpatterns = [
     path('certificado/<uuid:cert_id>/', download_certificate, name='download_certificate'),
     path('carrito/pagar/', pay_cart, name='cart_pay'),
     path('mis-cursos/', my_courses, name='my_courses'),
+    
 ]

@@ -1,11 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import TemplateView, ListView, View
 from django.http import HttpResponseRedirect
-from .models import Course, Category, Payment, Progress, Certification, Cart
+from .models import Course, Category, Payment, Progress, Certification, Cart, User
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
-
+from django.contrib.auth import authenticate, login 
+from django.utils.decorators import method_decorator
 # Create your views here.
 
 class HomePageView(TemplateView):
@@ -61,11 +62,47 @@ class CartRemoveAllView(View):
         }
         return render(request, self.template_name, context)
 
+@method_decorator(login_required, name='dispatch')
 class ProfilePageView(TemplateView):
     template_name = 'pages/Profile.html'
 
-    
+    def get(self, request, *args, **kwargs):
+        return render(request, self.template_name, {
+            "user": request.user,
+            "success": "",
+            "error": "",
+        })
 
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        username = request.POST.get("username", user.username)
+        first_name = request.POST.get("first_name", user.first_name)
+        last_name = request.POST.get("last_name", user.last_name)
+        email = request.POST.get("email", user.email)
+
+        error = ""
+        success = ""
+
+        # Validaciones simples
+        if not username or not first_name or not last_name or not email:
+            error = "Todos los campos son obligatorios."
+        elif username != user.username and user.__class__.objects.filter(username=username).exists():
+            error = "El usuario ya existe."
+        elif email != user.email and user.__class__.objects.filter(email=email).exists():
+            error = "El correo ya está registrado."
+        else:
+            user.username = username
+            user.first_name = first_name
+            user.last_name = last_name
+            user.email = email
+            user.save()
+            success = "¡Datos actualizados correctamente!"
+
+        return render(request, self.template_name, {
+            "user": user,
+            "success": success,
+            "error": error,
+        })
     
 
 class CoursesPageView(TemplateView):
@@ -230,3 +267,47 @@ def my_courses(request):
         'title': 'Mis Cursos'
     }
     return render(request, 'pages/my_courses.html', context)
+
+
+def login_view(request):
+    error = ""
+    if request.method == "POST":
+        username = request.POST["username"]
+        password = request.POST["password"]
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect("home")         
+            error = "Usuario o contraseña incorrectos"
+    return render(request, "pages/login.html", {"error": error})
+
+
+
+def register_view(request):
+    error = ""
+    if request.method == "POST":
+        username = request.POST["username"]
+        first_name = request.POST["first_name"]
+        last_name = request.POST["last_name"]
+        email = request.POST["email"]
+        password = request.POST["password"]
+        password2 = request.POST["password2"]
+
+        if password != password2:
+            error = "Las contraseñas no coinciden."
+        elif User.objects.filter(username=username).exists():
+            error = "El usuario ya existe."
+        elif User.objects.filter(email=email).exists():
+            error = "El correo ya está registrado."
+        else:
+            user = User.objects.create_user(
+                username=username,
+                email=email,
+                password=password,
+                first_name=first_name,
+                last_name=last_name
+            )
+            login(request, user)
+            return redirect("home")
+
+    return render(request, "pages/register.html", {"error": error})
