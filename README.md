@@ -4,9 +4,9 @@ Este proyecto es una aplicación web desarrollada con Django que permite gestion
 
 - Requisitos previos
 Antes de ejecutar el proyecto asegúrate de tener instalado:
-  . Python 3.10+
-  . Django 5+
-  . Git
+  - Python 3.10+
+  - Django 5+
+  - Git
   
 - Instalación y ejecución
   . Clonar el repositorio
