@@ -347,7 +347,6 @@ def generate_certificate_pdf(request, course_id):
     if not progreso:
         return HttpResponseForbidden("No has completado el curso.")
 
-    # Generar PDF
     buffer = BytesIO()
     p = canvas.Canvas(buffer, pagesize=letter)
     p.setFont("Helvetica-Bold", 22)
