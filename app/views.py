@@ -190,17 +190,17 @@ def course_content_view(request, slug):
         usuario=request.user,
         defaults={'porcentaje': 0}
     )
-    show_certificate = progress_obj.porcentaje >= 100
+    progress = int(progress_obj.porcentaje) if progress_obj.porcentaje else 0
+    show_certificate = progress >= 100
     certificate = None
     if show_certificate:
         certificate = Certification.objects.filter(curso=course, usuario=request.user).first()
-    return render(request, 'course/course_content.html', {   # <-- usa el template correcto AQUÍ
+    return render(request, 'course/course_content.html', {
         'course': course,
-        'progress': progress_obj.porcentaje,
+        'progress': progress,
         'show_certificate': show_certificate,
         'certificate': certificate
     })
-
 @login_required
 def update_progress(request, slug):
     course = get_object_or_404(Course, slug=slug)

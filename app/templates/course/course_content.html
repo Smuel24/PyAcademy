@@ -5,7 +5,6 @@
     <title>{{ course.title }} | PyAcademy</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
     <style>
-        /* Usa los mismos estilos que en showcourse.html y home.html */
         body { font-family: 'Roboto', Arial, sans-serif; background: #f5f6fa; color: #222; margin: 0; }
         header { background: #2980b9; color: #fff; padding: 16px 0; }
         nav { display: flex; justify-content: space-between; align-items: center; max-width: 1100px; margin: 0 auto; }
@@ -29,6 +28,9 @@
         .resource-title { color: #2980b9; font-weight: 500; text-decoration: underline; }
         .resource-meta { color: #555; font-size: 0.97em; margin-left: 8px; }
         .footer { background: #222; color: #fff; padding: 22px 0; text-align: center; margin-top: 48px; }
+        .progress-bar-container { background:#eee; border-radius:12px; overflow:hidden; width:300px; height:30px; }
+        .progress-bar { background:#27ae60; height:30px; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:bold; }
+        .certificate-btn { background: #27ae60; color: #fff; padding: 10px 24px; border-radius: 5px; text-decoration: none; display: inline-block; margin-top: 8px; }
         @media (max-width: 900px) {
             .container { padding: 18px 6vw; }
             .course-header { flex-direction: column; gap: 18px; }
@@ -62,6 +64,34 @@
                 <div class="course-desc"><b>Descripción:</b> {{ course.description }}</div>
             </div>
         </div>
+
+        <!-- PROGRESO DEL USUARIO -->
+        <div style="margin:32px 0;">
+            <h3>Tu progreso en este curso:</h3>
+            <div class="progress-bar-container">
+                
+            </div>
+            {% if progress < 100 %}
+                <form method="post" action="{% url 'update_progress' course.slug %}" style="margin-top:18px;">
+                    {% csrf_token %}
+                    <input type="number" name="porcentaje" min="0" max="100" value="{{ progress }}" required>
+                    <button type="submit">Actualizar progreso</button>
+                </form>
+            {% else %}
+                <p style="color:#27ae60;font-weight:700;">¡Curso completado!</p>
+            {% endif %}
+
+            {% if show_certificate and certificate %}
+                <div style="margin-top:16px;">
+                    <p>¡Felicidades! Puedes descargar tu certificado.</p>
+                    <a href="{% url 'download_certificate' certificate.id %}" class="certificate-btn">Descargar certificado</a>
+                </div>
+            {% elif show_certificate %}
+                <p>¡Felicidades! Tu certificado se generará tras el pago.</p>
+            {% endif %}
+        </div>
+        <!-- FIN PROGRESO -->
+
         <div class="modules-section">
             <div class="modules-title">Contenido del curso</div>
             {% for module in course.modules.all %}
