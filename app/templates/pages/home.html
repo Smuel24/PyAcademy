@@ -42,36 +42,41 @@
                 <a href="{% url 'categories' %}">Categorías</a>
                 <a href="{% url 'profile' %}">Mi cuenta</a>
                 <a href="{% url 'cart' %}">Carrito</a>
-                <a href="{% url 'login' %}">Iniciar sesion</a>
-
+                <a href="{% url 'login' %}">Iniciar sesión</a>
             </div>
         </nav>
     </header>
     <section class="banner">
         <h1>¡Bienvenido a PyAcademy!</h1>
         <p>El mejor marketplace para aprender Python, desarrollo web y mucho más.</p>
-        <a class="btn-main" href= "{% url 'cursos' %}">Explora los cursos</a>
+        <a class="btn-main" href="{% url 'cursos' %}">Explora los cursos</a>
     </section>
 
     <section class="courses-section">
         <div class="courses-title">Cursos Destacados</div>
         <div class="courses-list">
-            <!-- Aquí iría el loop de render de cursos en Django -->
-            <div class="course-card">
-                <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?fit=crop&w=400&q=80" alt="Curso Python">
-                <div class="course-title">Python desde cero</div>
-                <div class="course-info">Por Juan Pérez | Nivel: Básico</div>
-                <div class="course-price">$19.99</div>
-                <a class="course-btn" href="#">Ver Curso</a>
-            </div>
-            <div class="course-card">
-                <img src="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?fit=crop&w=400&q=80" alt="Curso Web">
-                <div class="course-title">Desarrollo Web Completo</div>
-                <div class="course-info">Por Laura Gómez | Nivel: Intermedio</div>
-                <div class="course-price">$24.99</div>
-                <a class="course-btn" href="#">Ver Curso</a>
-            </div>
-            <!-- ...más cursos -->
+            {% for course in courses|slice:":3" %}
+                <div class="course-card">
+                    {% if course.img %}
+                        <img src="{{ course.img.url }}" alt="Imagen del curso {{ course.title }}">
+                    {% else %}
+                        <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?fit=crop&w=400&q=80" alt="Curso por defecto">
+                    {% endif %}
+                    <div class="course-title">{{ course.title }}</div>
+                    <div class="course-info">
+                        Por {{ course.teacher.get_full_name }} | Nivel: {{ course.level }}
+                    </div>
+                    <div class="course-price">${{ course.price }}</div>
+                    <a class="course-btn" href="{% url 'course_detail' slug=course.slug %}">Ver Curso</a>
+                </div>
+            {% empty %}
+                <div class="course-card">
+                    <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?fit=crop&w=400&q=80" alt="Curso por defecto">
+                    <div class="course-title">Sin cursos disponibles</div>
+                    <div class="course-info">Pronto habrá más cursos publicados.</div>
+                    <div class="course-price">---</div>
+                </div>
+            {% endfor %}
         </div>
     </section>
 

@@ -7,6 +7,7 @@ class Category(models.Model):
     name = models.CharField(max_length=150)
     description = models.CharField(max_length=300)
     slug = models.SlugField(unique=True)
+    img = models.ImageField(upload_to='portadas/', null=True, blank=True) 
 
 class Course(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -51,7 +52,7 @@ class Progress(models.Model):
     fecha_actualizacion = models.DateTimeField(auto_now=True)
     recursos_vistos = models.TextField(default="", blank=True)
 
-    
+
 class Payment(models.Model):
     STATES = (
         ('PENDING', 'PENDING'),

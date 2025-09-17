@@ -16,6 +16,11 @@ from reportlab.pdfgen import canvas
 
 class HomePageView(TemplateView):
     template_name = 'pages/home.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['courses'] = Course.objects.all()  # Trae todos los cursos de la BD
+        return context
     
 
 
@@ -27,15 +32,15 @@ class CartPageView(View):
     template_name = 'pages/cart.html'
 
     def get(self, request):
-        # Cursos disponibles
+    
         products = {}
         for course in Course.objects.all():
+
             products[str(course.id)] = {
                 'name': course.title,
                 'price': course.certification_price
             }
 
-        # Cursos en el carrito del usuario
         cart_products = {}
         if request.user.is_authenticated:
             from .models import Cart
@@ -57,7 +62,7 @@ class CartRemoveAllView(View):
     template_name = 'pages/cart.html'
 
     def post(self, request):
-        # Mostrar los cursos en el carrito del usuario autenticado
+        
         cart_items = []
         if request.user.is_authenticated:
             from .models import Cart
@@ -89,7 +94,7 @@ class ProfilePageView(TemplateView):
         error = ""
         success = ""
 
-        # Validaciones simples
+        # Validaciones 
         if not username or not first_name or not last_name or not email:
             error = "Todos los campos son obligatorios."
         elif username != user.username and user.__class__.objects.filter(username=username).exists():
@@ -128,6 +133,7 @@ class CourseShowView(View):
         user_has_course = False
         if request.user.is_authenticated:
             user_has_course = Payment.objects.filter(
+               
                 usuario=request.user,
                 curso=course,
                 state='PAID'
@@ -155,6 +161,8 @@ class CategoryListView(View):
         context = {
             'categories': categories,
             'title': 'Todas las Categorías',
+
+        
             'search_query': search_query
         }
         return render(request, self.template_name, context)
@@ -178,44 +186,17 @@ class CategoryDetailView(View):
 @login_required
 @require_POST
 def add_to_cart(request, course_id):
-    # Tu modelo de carrito debería tener user y course
+  
     from .models import Cart, Course
     course = get_object_or_404(Course, id=course_id)
-    # Evita duplicados
     cart_item, created = Cart.objects.get_or_create(user=request.user, course=course)
-    # Redirige al carrito
     return redirect('cart') 
 
-@csrf_exempt    
-@login_required
-def update_progress_video(request, slug, resource_id):  # <--- CAMBIA course_slug por slug
-    if request.method == "POST":
-        user = request.user
-        try:
-            course = Course.objects.get(slug=slug)  # <--- Usa 'slug' aquí
-            resource = Resource.objects.get(id=resource_id, module__course=course)
-            progress_obj, created = Progress.objects.get_or_create(
-                curso=course,
-                usuario=user,
-                defaults={'porcentaje': 0, 'recursos_vistos': ""}
-            )
-            vistos = set(progress_obj.recursos_vistos.split(",")) if progress_obj.recursos_vistos else set()
-            if str(resource.id) not in vistos:
-                vistos.add(str(resource.id))
-                total_recursos = Resource.objects.filter(module__course=course).count()
-                porcentaje = round((len(vistos) / total_recursos) * 100, 2) if total_recursos else 0
-                progress_obj.porcentaje = porcentaje
-                progress_obj.recursos_vistos = ",".join(vistos)
-                progress_obj.save()
-            return JsonResponse({'progress': progress_obj.porcentaje})
-        except Exception as e:
-            print("ERROR EN PROGRESO VIDEO:", e)
-            return JsonResponse({'error': str(e)}, status=400)
-    return JsonResponse({'error': 'Método no permitido'}, status=405)
 
 
 @login_required
 def course_content_view(request, slug):
+    
     course = get_object_or_404(Course, slug=slug)
     progress_obj, created = Progress.objects.get_or_create(
         curso=course,
@@ -240,6 +221,7 @@ def course_content_view(request, slug):
 @csrf_exempt
 @login_required
 def update_progress_video(request, slug, resource_id):
+   
     if request.method == "POST":
         user = request.user
         try:
@@ -265,6 +247,7 @@ def update_progress_video(request, slug, resource_id):
 
 @login_required
 def download_certificate(request, cert_id):
+  
     certificate = get_object_or_404(Certification, id=cert_id)
     return render(request, 'course/certificate.html', {
         'certificate': certificate,
@@ -275,6 +258,7 @@ def download_certificate(request, cert_id):
 
 @login_required
 def pay_cart(request):
+  
     if request.method == 'POST':
         cart_items = Cart.objects.filter(user=request.user).select_related('course')
         for item in cart_items:
@@ -292,9 +276,8 @@ def pay_cart(request):
 
 @login_required
 def my_courses(request):
-    # Buscar todos los pagos exitosos del usuario
+   
     pagos = Payment.objects.filter(usuario=request.user, state='PAID').select_related('curso')
-    # Extraer los cursos únicos de esos pagos
     cursos = list({pago.curso.id: pago.curso for pago in pagos}.values())
     context = {
         'cursos': cursos,
@@ -304,6 +287,7 @@ def my_courses(request):
 
 
 def login_view(request):
+    
     error = ""
     if request.method == "POST":
         username = request.POST["username"]
@@ -318,6 +302,7 @@ def login_view(request):
 
 
 def register_view(request):
+   
     error = ""
     if request.method == "POST":
         username = request.POST["username"]
