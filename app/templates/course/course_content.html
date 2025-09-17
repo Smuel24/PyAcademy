@@ -25,17 +25,21 @@
         ul { margin: 0; padding-left: 22px; }
         li { margin-bottom: 8px; font-size: 1em; color: #222; }
         .resource-type { font-weight: bold; color: #27ae60; }
-        .resource-title { color: #2980b9; font-weight: 500; text-decoration: underline; }
+        .resource-title { color: #2980b9; font-weight: 500; }
         .resource-meta { color: #555; font-size: 0.97em; margin-left: 8px; }
         .footer { background: #222; color: #fff; padding: 22px 0; text-align: center; margin-top: 48px; }
         .progress-bar-container { background:#eee; border-radius:12px; overflow:hidden; width:300px; height:30px; }
-        .progress-bar { background:#27ae60; height:30px; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:bold; }
+        .progress-bar { background:#27ae60; height:30px; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:bold; transition: width 0.5s; }
         .certificate-btn { background: #27ae60; color: #fff; padding: 10px 24px; border-radius: 5px; text-decoration: none; display: inline-block; margin-top: 8px; }
+        .mark-watched-btn { background: #2980b9; color: #fff; border: none; padding: 6px 18px; border-radius: 5px; margin-top: 10px; cursor:pointer; font-weight: bold; }
         @media (max-width: 900px) {
             .container { padding: 18px 6vw; }
             .course-header { flex-direction: column; gap: 18px; }
             .course-img { width: 100%; max-width: 99vw; }
         }
+        .video-iframe { width: 320px; height: 240px; border: none; }
+        .video-error { color: #c0392b; font-weight: bold; }
+        .certificado-box { background:#f4fff4; border:1px solid #27ae60; padding:20px; border-radius:8px; margin:24px 0;}
     </style>
 </head>
 <body>
@@ -69,25 +73,15 @@
         <div style="margin:32px 0;">
             <h3>Tu progreso en este curso:</h3>
             <div class="progress-bar-container">
-                
+                <div class="progress-bar" id="progress-bar" style="width: {{ progress }}%;">{{ progress }}%</div>
             </div>
-            {% if progress < 100 %}
-                <form method="post" action="{% url 'update_progress' course.slug %}" style="margin-top:18px;">
-                    {% csrf_token %}
-                    <input type="number" name="porcentaje" min="0" max="100" value="{{ progress }}" required>
-                    <button type="submit">Actualizar progreso</button>
-                </form>
-            {% else %}
-                <p style="color:#27ae60;font-weight:700;">¡Curso completado!</p>
-            {% endif %}
-
-            {% if show_certificate and certificate %}
-                <div style="margin-top:16px;">
-                    <p>¡Felicidades! Puedes descargar tu certificado.</p>
-                    <a href="{% url 'download_certificate' certificate.id %}" class="certificate-btn">Descargar certificado</a>
+            {% if progress >= 100 %}
+                <div class="certificado-box">
+                  <h2>¡Curso completado!</h2>
+                  <p>¡Felicitaciones! Has completado el curso <strong>{{ course.title }}</strong> al 100%.</p>
+                  <p>Puedes descargar tu certificado de finalización:</p>
+                  <a href="{% url 'generate_certificate_pdf' course.id %}" class="certificate-btn">Descargar certificado PDF</a>
                 </div>
-            {% elif show_certificate %}
-                <p>¡Felicidades! Tu certificado se generará tras el pago.</p>
             {% endif %}
         </div>
         <!-- FIN PROGRESO -->
@@ -102,9 +96,45 @@
                         {% for resource in module.resources.all %}
                             <li>
                                 <span class="resource-type">{{ resource.type }}:</span>
-                                <a class="resource-title" href="{{ resource.url }}">{{ resource.title }}</a>
-                                {% if resource.duration %}
-                                    <span class="resource-meta">(Duración: {{ resource.duration }} min)</span>
+                                {% if resource.type == "Video" %}
+                                    <span class="resource-title">{{ resource.title }}</span>
+                                    <br>
+                                    {% if "youtube.com/watch?v=" in resource.url %}
+                                        {% with resource.url|cut:"https://www.youtube.com/watch?v=" as yt_rest %}
+                                            {% with yt_rest|cut:"&"|slice:":11" as yt_id %}
+                                                <iframe class="video-iframe" src="https://www.youtube.com/embed/{{ yt_id }}" allowfullscreen></iframe>
+                                            {% endwith %}
+                                        {% endwith %}
+                                    {% elif "youtu.be/" in resource.url %}
+                                        {% with resource.url|cut:"https://youtu.be/" as yt_rest %}
+                                            {% with yt_rest|cut:"?"|slice:":11" as yt_id %}
+                                                <iframe class="video-iframe" src="https://www.youtube.com/embed/{{ yt_id }}" allowfullscreen></iframe>
+                                            {% endwith %}
+                                        {% endwith %}
+                                    {% elif "vimeo.com/" in resource.url %}
+                                        {% with resource.url|cut:"https://vimeo.com/" as vimeo_id %}
+                                            <iframe class="video-iframe" src="https://player.vimeo.com/video/{{ vimeo_id }}" allowfullscreen></iframe>
+                                        {% endwith %}
+                                    {% elif resource.url|slice:"-4:" == ".mp4" %}
+                                        <video width="320" height="240" controls id="video{{ resource.id }}">
+                                            <source src="{{ resource.url }}" type="video/mp4">
+                                            Tu navegador no soporta videos.
+                                        </video>
+                                    {% else %}
+                                        <div class="video-error">
+                                            Formato de video no soportado o link incorrecto.
+                                        </div>
+                                    {% endif %}
+                                    <span class="resource-meta">
+                                        {% if resource.duration %}(Duración: {{ resource.duration }} min){% endif %}
+                                    </span>
+                                    <br>
+                                    <button class="mark-watched-btn" onclick="markWatched('{{ course.slug }}', '{{ resource.id }}', this)">Marcar como visto</button>
+                                {% elif resource.type == "PDF" %}
+                                    <a class="resource-title" href="{{ resource.url }}" target="_blank">{{ resource.title }}</a>
+                                    <span class="resource-meta">
+                                        {% if resource.duration %}(Duración: {{ resource.duration }} min){% endif %}
+                                    </span>
                                 {% endif %}
                             </li>
                         {% empty %}
@@ -120,5 +150,32 @@
     <footer class="footer">
         PyAcademy © 2025 · Contacto: info@pyacademy.com · Síguenos en redes sociales
     </footer>
+<script>
+function markWatched(courseSlug, resourceId, btn) {
+    fetch(`/curso/${courseSlug}/video/${resourceId}/progreso/`, {
+        method: "POST",
+        headers: {
+            "X-CSRFToken": "{{ csrf_token }}",
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({})
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.progress !== undefined) {
+            var barra = document.getElementById('progress-bar');
+            barra.style.width = data.progress + "%";
+            barra.textContent = data.progress + "%";
+            btn.disabled = true;
+            btn.textContent = "¡Marcado!";
+            // Opcional: recargar para mostrar el botón de certificado si llega a 100%
+            if(data.progress >= 100) window.location.reload();
+        } else if (data.error) {
+            alert("Error: " + data.error);
+        }
+    })
+    .catch(() => alert("Hubo un error al actualizar el progreso"));
+}
+</script>
 </body>
 </html>

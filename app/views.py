@@ -1,16 +1,22 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import TemplateView, ListView, View
-from django.http import HttpResponseRedirect
-from .models import Course, Category, Payment, Progress, Certification, Cart, User
+from django.http import JsonResponse, FileResponse, HttpResponseForbidden
+from .models import Course, Category, Payment, Progress, Certification, Cart, User, Resource
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from django.contrib.auth import authenticate, login 
 from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
+from reportlab.lib.pagesizes import letter
+from django.utils import timezone
+from io import BytesIO
+from reportlab.pdfgen import canvas
 # Create your views here.
 
 class HomePageView(TemplateView):
     template_name = 'pages/home.html'
+    
 
 
 class CategoriesPageView(TemplateView):
@@ -180,6 +186,32 @@ def add_to_cart(request, course_id):
     # Redirige al carrito
     return redirect('cart') 
 
+@csrf_exempt    
+@login_required
+def update_progress_video(request, slug, resource_id):  # <--- CAMBIA course_slug por slug
+    if request.method == "POST":
+        user = request.user
+        try:
+            course = Course.objects.get(slug=slug)  # <--- Usa 'slug' aquí
+            resource = Resource.objects.get(id=resource_id, module__course=course)
+            progress_obj, created = Progress.objects.get_or_create(
+                curso=course,
+                usuario=user,
+                defaults={'porcentaje': 0, 'recursos_vistos': ""}
+            )
+            vistos = set(progress_obj.recursos_vistos.split(",")) if progress_obj.recursos_vistos else set()
+            if str(resource.id) not in vistos:
+                vistos.add(str(resource.id))
+                total_recursos = Resource.objects.filter(module__course=course).count()
+                porcentaje = round((len(vistos) / total_recursos) * 100, 2) if total_recursos else 0
+                progress_obj.porcentaje = porcentaje
+                progress_obj.recursos_vistos = ",".join(vistos)
+                progress_obj.save()
+            return JsonResponse({'progress': progress_obj.porcentaje})
+        except Exception as e:
+            print("ERROR EN PROGRESO VIDEO:", e)
+            return JsonResponse({'error': str(e)}, status=400)
+    return JsonResponse({'error': 'Método no permitido'}, status=405)
 
 
 @login_required
@@ -194,40 +226,42 @@ def course_content_view(request, slug):
     show_certificate = progress >= 100
     certificate = None
     if show_certificate:
-        certificate = Certification.objects.filter(curso=course, usuario=request.user).first()
+        certificate = Certification.objects.filter(
+        payment__curso=course,
+        payment__usuario=request.user
+        ).first()
     return render(request, 'course/course_content.html', {
         'course': course,
         'progress': progress,
         'show_certificate': show_certificate,
         'certificate': certificate
     })
-@login_required
-def update_progress(request, slug):
-    course = get_object_or_404(Course, slug=slug)
-    if request.method == 'POST':
-        progress_obj, created = Progress.objects.get_or_create(
-            curso=course,
-            usuario=request.user,
-            defaults={'porcentaje': 0}
-        )
-        nuevo_porcentaje = float(request.POST.get('porcentaje', 0))
-        progress_obj.porcentaje = min(100, max(0, nuevo_porcentaje))
-        progress_obj.save()
-        if progress_obj.porcentaje >= 100:
-            payment = Payment.objects.filter(curso=course, usuario=request.user, state='PAID').first()
-            if payment:
-                from .models import Certification
-                if not Certification.objects.filter(payment=payment).exists():
-                    import random
-                    unique_code = f"CERT-{random.randint(100000,999999)}"
-                    Certification.objects.create(
-                        payment=payment,
-                        unique_code=unique_code,
-                        emition_date=timezone.now()
-                    )
-        return redirect('course_view', slug=slug)
-    
 
+@csrf_exempt
+@login_required
+def update_progress_video(request, slug, resource_id):
+    if request.method == "POST":
+        user = request.user
+        try:
+            course = Course.objects.get(slug=slug)
+            resource = Resource.objects.get(id=resource_id, module__course=course)
+            progress_obj, created = Progress.objects.get_or_create(
+                curso=course,
+                usuario=user,
+                defaults={'porcentaje': 0, 'recursos_vistos': ""}
+            )
+            vistos = set(progress_obj.recursos_vistos.split(",")) if progress_obj.recursos_vistos else set()
+            if str(resource.id) not in vistos:
+                vistos.add(str(resource.id))
+                total_recursos = Resource.objects.filter(module__course=course).count()
+                porcentaje = round((len(vistos) / total_recursos) * 100, 2) if total_recursos else 0
+                progress_obj.porcentaje = porcentaje
+                progress_obj.recursos_vistos = ",".join(vistos)
+                progress_obj.save()
+            return JsonResponse({'progress': progress_obj.porcentaje})
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+    return JsonResponse({'error': 'Método no permitido'}, status=405)
 
 @login_required
 def download_certificate(request, cert_id):
@@ -311,3 +345,33 @@ def register_view(request):
             return redirect("home")
 
     return render(request, "pages/register.html", {"error": error})
+
+
+@login_required
+def generate_certificate_pdf(request, course_id):
+    user = request.user
+    course = get_object_or_404(Course, id=course_id)
+
+    # Validar que el usuario tenga el curso pagado
+    pago = Payment.objects.filter(curso=course, usuario=user, state='PAID').first()
+    if not pago:
+        return HttpResponseForbidden("No has pagado este curso.")
+
+    # Validar que el progreso sea 100%
+    progreso = Progress.objects.filter(curso=course, usuario=user, porcentaje__gte=100).first()
+    if not progreso:
+        return HttpResponseForbidden("No has completado el curso.")
+
+    # Generar PDF
+    buffer = BytesIO()
+    p = canvas.Canvas(buffer, pagesize=letter)
+    p.setFont("Helvetica-Bold", 22)
+    p.drawString(100, 700, "¡Felicitaciones por completar el curso!")
+    p.setFont("Helvetica", 16)
+    p.drawString(100, 650, f"Nombre: {user.get_full_name()}")
+    p.drawString(100, 620, f"Curso: {course.title}")
+    p.drawString(100, 590, f"Fecha: {timezone.now().strftime('%Y-%m-%d %H:%M')}")
+    p.showPage()
+    p.save()
+    buffer.seek(0)
+    return FileResponse(buffer, as_attachment=True, filename='certificado.pdf')

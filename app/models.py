@@ -49,7 +49,9 @@ class Progress(models.Model):
     usuario = models.ForeignKey(User, on_delete=models.CASCADE, related_name='progresos')
     porcentaje = models.FloatField()
     fecha_actualizacion = models.DateTimeField(auto_now=True)
+    recursos_vistos = models.TextField(default="", blank=True)
 
+    
 class Payment(models.Model):
     STATES = (
         ('PENDING', 'PENDING'),
