@@ -9,6 +9,6 @@ Antes de ejecutar el proyecto asegúrate de tener instalado:
   - Git
   
 - Instalación y ejecución
-  . Clonar el repositorio
-  . Ejecutar el servidor
-  . git clone https://github.com/usuario/tu-repo.gitcd tu-repo
+  - Clonar el repositorio
+  - Ejecutar el servidor
+  - git clone https://github.com/usuario/tu-repo.gitcd tu-repo
