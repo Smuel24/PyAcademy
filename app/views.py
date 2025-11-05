@@ -121,26 +121,7 @@ class ProfilePageView(TemplateView):
             "error": error,
         })
     
-
-@method_decorator(login_required, name='dispatch')
-class CartPageView(View):
-    template_name = 'pages/cart.html'
-
-    def get(self, request):
-        cart_items = []
-        total_price = 0
-        
-        if request.user.is_authenticated:
-            from .models import Cart
-            cart_items = Cart.objects.filter(user=request.user).select_related('course')
-            total_price = sum(item.course.certification_price for item in cart_items)
-
-        context = {
-            'title': 'Carrito de compras',
-            'cart_items': cart_items,
-            'total_price': total_price,
-        }
-        return render(request, self.template_name, context)
+    
     
 
 class CoursesPageView(TemplateView):
