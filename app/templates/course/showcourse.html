@@ -1,4 +1,5 @@
 {% load i18n %}
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -71,7 +72,7 @@
                     {% if course in user.courses.all %}
                         <a href="{% url 'course_content' course.slug %}" class="btn-success">{% trans "Ver Contenido" %}</a>
                     {% else %}
-                        <form method="post" action="{% url 'add_to_cart' course.id %}">
+                        <form method="post" action="{% url 'cart_add' course.id %}">
                             {% csrf_token %}
                             <button type="submit" class="btn-main">{% trans "Agregar al Carrito" %}</button>
                         </form>

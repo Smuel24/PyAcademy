@@ -19,4 +19,5 @@ urlpatterns = [
     path('students-grades/', students_grades_api, name='students_grades'),
     path('promotions/', promotions_api, name='promotions'),
     path('featured-mascots/', featured_mascots_api, name='featured_mascots'),
+    
 ]
