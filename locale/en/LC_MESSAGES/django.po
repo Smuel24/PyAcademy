@@ -1,0 +1,301 @@
+# English translation for PyAcademy
+# Copyright (C) 2025
+# This file is distributed under the same license as the PyAcademy package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PyAcademy 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-05 04:52:32+0000\n"
+"PO-Revision-Date: 2025-11-05 05:02:41+0000\n"
+"Last-Translator: PyAcademy Team\n"
+"Language-Team: English <en@li.org>\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Cursos"
+msgstr "Courses"
+
+msgid "Mi cuenta"
+msgstr "My Account"
+
+msgid "Carrito"
+msgstr "Cart"
+
+msgid "Cursos en esta categoría"
+msgstr "Courses in This Category"
+
+msgid "Ver más"
+msgstr "See More"
+
+msgid "No hay cursos en esta categoría"
+msgstr "No courses in this category"
+
+msgid "PyAcademy © 2025 · Contacto: info@pyacademy.com · Síguenos en redes sociales"
+msgstr "PyAcademy © 2025 · Contact: info@pyacademy.com · Follow Us on Social Media"
+
+msgid "Categorías"
+msgstr "Categories"
+
+msgid "Categoría:"
+msgstr "Category:"
+
+msgid "Nivel:"
+msgstr "Level:"
+
+msgid "Duración:"
+msgstr "Duration:"
+
+msgid "Descripción:"
+msgstr "Description:"
+
+msgid "Tu progreso en este curso:"
+msgstr "Your progress in this course:"
+
+msgid "¡Curso completado!"
+msgstr "Course Completed!"
+
+msgid "¡Felicitaciones! Has completado el curso <strong>%(title)s</strong> al 100%%."
+msgstr "Congratulations! You have completed the course <strong>%(title)s</strong> at 100%%."
+
+msgid "Puedes descargar tu certificado de finalización:"
+msgstr "You can download your completion certificate:"
+
+msgid "Descargar certificado PDF"
+msgstr "Download PDF Certificate"
+
+msgid "Contenido del curso"
+msgstr "Course Content"
+
+msgid "Tu navegador no soporta videos."
+msgstr "Your browser does not support videos."
+
+msgid "Formato de video no soportado o link incorrecto."
+msgstr "Unsupported video format or incorrect link."
+
+msgid "(Duración: %(duration)s min)"
+msgstr "(Duration: %(duration)s min)"
+
+msgid "Marcar como visto"
+msgstr "Mark as Viewed"
+
+msgid "No hay recursos en este módulo."
+msgstr "No resources in this module."
+
+msgid "No hay módulos para este curso."
+msgstr "No modules for this course."
+
+msgid "¡Marcado!"
+msgstr "Marked!"
+
+msgid "Error:"
+msgstr "Error:"
+
+msgid "Hubo un error al actualizar el progreso"
+msgstr "There was an error updating progress"
+
+msgid "Buscar curso..."
+msgstr "Search for a course..."
+
+msgid "Buscar"
+msgstr "Search"
+
+msgid "Portada de"
+msgstr "Cover of"
+
+msgid "No se encontraron cursos para tu búsqueda."
+msgstr "No courses found for your search."
+
+msgid "Sin portada"
+msgstr "No cover"
+
+msgid "Instructor:"
+msgstr "Instructor:"
+
+msgid "$%(price)s"
+msgstr "$%(price)s"
+
+msgid "Ver Contenido"
+msgstr "View Content"
+
+msgid "Agregar al Carrito"
+msgstr "Add to Cart"
+
+msgid "Debes iniciar sesión para comprar"
+msgstr "You must sign in to purchase"
+
+msgid "Iniciar Sesión"
+msgstr "Sign In"
+
+msgid "Perfil"
+msgstr "Profile"
+
+msgid "Usuario"
+msgstr "Username"
+
+msgid "Nombre"
+msgstr "First Name"
+
+msgid "Apellido"
+msgstr "Last Name"
+
+msgid "Correo electrónico"
+msgstr "Email Address"
+
+msgid "Guardar cambios"
+msgstr "Save Changes"
+
+msgid "Volver al inicio"
+msgstr "Back to Home"
+
+msgid "Tu Carrito de Compras"
+msgstr "Your Shopping Cart"
+
+msgid "Cursos en tu carrito"
+msgstr "Courses in Your Cart"
+
+msgid "Total: $%(total_price)s"
+msgstr "Total: $%(total_price)s"
+
+msgid "Limpiar Carrito"
+msgstr "Clear Cart"
+
+msgid "Proceder al Pago"
+msgstr "Proceed to Checkout"
+
+msgid "Tu carrito está vacío"
+msgstr "Your Cart is Empty"
+
+msgid "Todos los cursos"
+msgstr "All Courses"
+
+msgid "No hay cursos disponibles"
+msgstr "No courses available"
+
+msgid "Registro"
+msgstr "Registration"
+
+msgid "Usuario:"
+msgstr "Username:"
+
+msgid "Nombre:"
+msgstr "First Name:"
+
+msgid "Apellido:"
+msgstr "Last Name:"
+
+msgid "Correo electrónico:"
+msgstr "Email Address:"
+
+msgid "Contraseña:"
+msgstr "Password:"
+
+msgid "Repetir contraseña:"
+msgstr "Repeat Password:"
+
+msgid "Registrarse"
+msgstr "Sign Up"
+
+msgid "¿Ya tienes cuenta?"
+msgstr "Already have an account?"
+
+msgid "Inicia sesión"
+msgstr "Sign In"
+
+msgid "Login"
+msgstr "Login"
+
+msgid "Ingresar"
+msgstr "Login"
+
+msgid "¿No tienes cuenta?"
+msgstr "Don't have an account?"
+
+msgid "Regístrate aquí"
+msgstr "Register Here"
+
+msgid "Buscar categoría..."
+msgstr "Search for a category..."
+
+msgid "Imagen de"
+msgstr "Image of"
+
+msgid "Sin imagen"
+msgstr "No Image"
+
+msgid "Ver categoría"
+msgstr "View Category"
+
+msgid "No hay categorías disponibles"
+msgstr "No categories available"
+
+msgid "Mis Cursos"
+msgstr "My Courses"
+
+msgid "Ver contenido"
+msgstr "View Content"
+
+msgid "No has comprado ningún curso aún."
+msgstr "You haven't purchased any courses yet."
+
+msgid "PyAcademy - Marketplace de Cursos"
+msgstr "PyAcademy - Courses Marketplace"
+
+msgid "Mis cursos"
+msgstr "My Courses"
+
+msgid "Iniciar sesión"
+msgstr "Sign In"
+
+msgid "¡Bienvenido a PyAcademy!"
+msgstr "Welcome to PyAcademy!"
+
+msgid "El mejor marketplace para aprender Python, desarrollo web y mucho más."
+msgstr "The best marketplace to learn Python, web development and much more."
+
+msgid "Explora los cursos"
+msgstr "Explore Courses"
+
+msgid "Cursos Destacados"
+msgstr "Featured Courses"
+
+msgid "Imagen del curso %(title)s"
+msgstr "Image of course %(title)s"
+
+msgid "Curso por defecto"
+msgstr "Default Course"
+
+msgid "Por %(teacher)s | Nivel: %(level)s"
+msgstr "By %(teacher)s | Level: %(level)s"
+
+msgid "Ver Curso"
+msgstr "View Course"
+
+msgid "Sin cursos disponibles"
+msgstr "No courses available"
+
+msgid "Pronto habrá más cursos publicados."
+msgstr "Soon there will be more courses published."
+
+msgid "¿Por qué elegir PyAcademy?"
+msgstr "Why Choose PyAcademy?"
+
+msgid "✔ Certificados de finalización"
+msgstr "✔ Completion Certificates"
+
+msgid "✔ Acceso de por vida"
+msgstr "✔ Lifetime Access"
+
+msgid "✔ Comunidad y soporte"
+msgstr "✔ Community and Support"
+
+msgid "✔ Profesores expertos"
+msgstr "✔ Expert Teachers"
+
+msgid "Español"
+msgstr "Spanish"
+
+msgid "English"
+msgstr "English"

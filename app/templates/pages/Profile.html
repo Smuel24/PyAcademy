@@ -1,8 +1,9 @@
+{% load i18n %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Perfil | PyAcademy</title>
+    <title>{% trans "Perfil" %} | PyAcademy</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
     <style>
         body { font-family: 'Roboto', Arial, sans-serif; background: #f5f6fa; color: #222; margin: 0; }
@@ -34,17 +35,21 @@
         {% endif %}
         <form method="post">
             {% csrf_token %}
-            <label for="username">Usuario</label>
+            <label for="username">{% trans "Usuario" %}</label>
             <input type="text" id="username" name="username" value="{{ user.username }}" required>
-            <label for="first_name">Nombre</label>
+            <label for="first_name">{% trans "Nombre" %}</label>
             <input type="text" id="first_name" name="first_name" value="{{ user.first_name }}" required>
-            <label for="last_name">Apellido</label>
+            <label for="last_name">{% trans "Apellido" %}</label>
             <input type="text" id="last_name" name="last_name" value="{{ user.last_name }}" required>
-            <label for="email">Correo electrónico</label>
+            <label for="email">{% trans "Correo electrónico" %}</label>
             <input type="email" id="email" name="email" value="{{ user.email }}" required>
-            <button type="submit" class="btn-main">Guardar cambios</button>
+            <button type="submit" class="btn-main">{% trans "Guardar cambios" %}</button>
         </form>
-        <a href="{% url 'home' %}" class="btn-back">Volver</a>
+        <a href="{% url 'home' %}" class="btn-back">{% trans "Volver al inicio" %}</a>
     </div>
+
+    <footer style="background: #222; color: #fff; padding: 22px 0; text-align: center; margin-top: 48px;">
+        <p>{% trans "PyAcademy © 2025 · Contacto: info@pyacademy.com · Síguenos en redes sociales" %}</p>
+    </footer>
 </body>
 </html>

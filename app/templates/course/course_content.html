@@ -1,3 +1,4 @@
+{% load i18n %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -47,9 +48,9 @@
         <nav>
             <div class="logo">PyAcademy</div>
             <div class="nav-links">
-                <a href="{% url 'categories' %}">Categorías</a>
-                <a href="{% url 'profile' %}">Mi cuenta</a>
-                <a href="{% url 'cart' %}">Carrito</a>
+                <a href="{% url 'categories' %}">{% trans "Categorías" %}</a>
+                <a href="{% url 'profile' %}">{% trans "Mi cuenta" %}</a>
+                <a href="{% url 'cart' %}">{% trans "Carrito" %}</a>
             </div>
         </nav>
     </header>
@@ -61,33 +62,33 @@
             <div class="course-info">
                 <div class="course-title">{{ course.title }}</div>
                 <div class="course-meta">
-                    <span><b>Categoría:</b> {{ course.category.name }}</span>
-                    <span><b>Nivel:</b> {{ course.level }}</span>
-                    <span><b>Duración:</b> {{ course.duration }}</span>
+                    <span><b>{% trans "Categoría:" %}</b> {{ course.category.name }}</span>
+                    <span><b>{% trans "Nivel:" %}</b> {{ course.level }}</span>
+                    <span><b>{% trans "Duración:" %}</b> {{ course.duration }}</span>
                 </div>
-                <div class="course-desc"><b>Descripción:</b> {{ course.description }}</div>
+                <div class="course-desc"><b>{% trans "Descripción:" %}</b> {{ course.description }}</div>
             </div>
         </div>
 
         <!-- PROGRESO DEL USUARIO -->
         <div style="margin:32px 0;">
-            <h3>Tu progreso en este curso:</h3>
+            <h3>{% trans "Tu progreso en este curso:" %}</h3>
             <div class="progress-bar-container">
                 <div class="progress-bar" id="progress-bar" style="width: {{ progress }}%;">{{ progress }}%</div>
             </div>
             {% if progress >= 100 %}
                 <div class="certificado-box">
-                  <h2>¡Curso completado!</h2>
-                  <p>¡Felicitaciones! Has completado el curso <strong>{{ course.title }}</strong> al 100%.</p>
-                  <p>Puedes descargar tu certificado de finalización:</p>
-                  <a href="{% url 'generate_certificate_pdf' course.id %}" class="certificate-btn">Descargar certificado PDF</a>
+                  <h2>{% trans "¡Curso completado!" %}</h2>
+                  <p>{% blocktrans with title=course.title %}¡Felicitaciones! Has completado el curso <strong>{{ title }}</strong> al 100%.{% endblocktrans %}</p>
+                  <p>{% trans "Puedes descargar tu certificado de finalización:" %}</p>
+                  <a href="{% url 'generate_certificate_pdf' course.id %}" class="certificate-btn">{% trans "Descargar certificado PDF" %}</a>
                 </div>
             {% endif %}
         </div>
         <!-- FIN PROGRESO -->
 
         <div class="modules-section">
-            <div class="modules-title">Contenido del curso</div>
+            <div class="modules-title">{% trans "Contenido del curso" %}</div>
             {% for module in course.modules.all %}
                 <div class="module">
                     <div class="module-title">{{ module.title }}</div>
@@ -118,37 +119,37 @@
                                     {% elif resource.url|slice:"-4:" == ".mp4" %}
                                         <video width="320" height="240" controls id="video{{ resource.id }}">
                                             <source src="{{ resource.url }}" type="video/mp4">
-                                            Tu navegador no soporta videos.
+                                            {% trans "Tu navegador no soporta videos." %}
                                         </video>
                                     {% else %}
                                         <div class="video-error">
-                                            Formato de video no soportado o link incorrecto.
+                                            {% trans "Formato de video no soportado o link incorrecto." %}
                                         </div>
                                     {% endif %}
                                     <span class="resource-meta">
-                                        {% if resource.duration %}(Duración: {{ resource.duration }} min){% endif %}
+                                        {% if resource.duration %}{% blocktrans with duration=resource.duration %}(Duración: {{ duration }} min){% endblocktrans %}{% endif %}
                                     </span>
                                     <br>
-                                    <button class="mark-watched-btn" onclick="markWatched('{{ course.slug }}', '{{ resource.id }}', this)">Marcar como visto</button>
+                                    <button class="mark-watched-btn" onclick="markWatched('{{ course.slug }}', '{{ resource.id }}', this)">{% trans "Marcar como visto" %}</button>
                                 {% elif resource.type == "PDF" %}
                                     <a class="resource-title" href="{{ resource.url }}" target="_blank">{{ resource.title }}</a>
                                     <span class="resource-meta">
-                                        {% if resource.duration %}(Duración: {{ resource.duration }} min){% endif %}
+                                        {% if resource.duration %}{% blocktrans with duration=resource.duration %}(Duración: {{ duration }} min){% endblocktrans %}{% endif %}
                                     </span>
                                 {% endif %}
                             </li>
                         {% empty %}
-                            <li>No hay recursos en este módulo.</li>
+                            <li>{% trans "No hay recursos en este módulo." %}</li>
                         {% endfor %}
                     </ul>
                 </div>
             {% empty %}
-                <div>No hay módulos para este curso.</div>
+                <div>{% trans "No hay módulos para este curso." %}</div>
             {% endfor %}
         </div>
     </div>
     <footer class="footer">
-        PyAcademy © 2025 · Contacto: info@pyacademy.com · Síguenos en redes sociales
+        {% blocktrans %}PyAcademy © 2025 · Contacto: info@pyacademy.com · Síguenos en redes sociales{% endblocktrans %}
     </footer>
 <script>
 function markWatched(courseSlug, resourceId, btn) {
@@ -167,14 +168,13 @@ function markWatched(courseSlug, resourceId, btn) {
             barra.style.width = data.progress + "%";
             barra.textContent = data.progress + "%";
             btn.disabled = true;
-            btn.textContent = "¡Marcado!";
-            // Opcional: recargar para mostrar el botón de certificado si llega a 100%
+            btn.textContent = "{% trans '¡Marcado!' %}";
             if(data.progress >= 100) window.location.reload();
         } else if (data.error) {
-            alert("Error: " + data.error);
+            alert("{% trans 'Error:' %} " + data.error);
         }
     })
-    .catch(() => alert("Hubo un error al actualizar el progreso"));
+    .catch(() => alert("{% trans 'Hubo un error al actualizar el progreso' %}"));
 }
 </script>
 </body>

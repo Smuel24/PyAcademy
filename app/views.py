@@ -12,6 +12,12 @@ from reportlab.lib.pagesizes import letter
 from django.utils import timezone
 from io import BytesIO
 from reportlab.pdfgen import canvas
+from rest_framework.decorators import api_view
+from rest_framework import viewsets, status
+from .serializers import CourseSerializer, StudentProgressSerializer
+from django.db.models import Avg, Count
+from rest_framework.response import Response
+
 # Create your views here.
 
 class HomePageView(TemplateView):
@@ -359,3 +365,49 @@ def generate_certificate_pdf(request, course_id):
     p.save()
     buffer.seek(0)
     return FileResponse(buffer, as_attachment=True, filename='certificado.pdf')
+
+
+
+def api_demo_view(request):
+    return render(request, 'API/api_demo.html')
+
+
+
+def news_view(request):
+    """Vista para mostrar noticias de tecnología"""
+    from django.conf import settings
+    import requests
+    
+    news_list = []
+    error = None
+    
+    try:
+        api_key = settings.NEWS_API_KEY
+        if not api_key:
+            error = "API Key no configurada"
+        else:
+            url = "https://newsapi.org/v2/everything"
+            
+            params = {
+                'q': 'technology tech software',
+                'sortBy': 'publishedAt',
+                'language': 'es',
+                'pageSize': 12,
+                'apiKey': api_key
+            }
+            
+            response = requests.get(url, params=params, timeout=10)
+            
+            if response.status_code == 200:
+                data = response.json()
+                news_list = data.get('articles', [])
+            else:
+                error = "Error al conectar con la API de noticias"
+                
+    except Exception as e:
+        error = f"Error: {str(e)}"
+    
+    return render(request, 'API/news.html'  , {
+        'news_list': news_list,
+        'error': error,
+    })

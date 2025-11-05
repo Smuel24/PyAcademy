@@ -1,8 +1,9 @@
+{% load i18n %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>{{ title }}</title>
+    <title>{% trans "Carrito" %} - {{ title }}</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
     <style>
         body { font-family: 'Roboto', Arial, sans-serif; background: #f5f6fa; color: #222; margin: 0; }
@@ -43,43 +44,48 @@
         <nav>
             <a href="{% url 'home' %}" class="logo" style="text-decoration:none; color:inherit;">PyAcademy</a>
             <div class="nav-links">
-                <a href="{% url 'cursos' %}">Cursos</a>
-                <a href="{% url 'categories' %}">Categorías</a>
-                <a href="{% url 'profile' %}">Mi cuenta</a>
+                <a href="{% url 'categories' %}">{% trans "Categorías" %}</a>
+                <a href="{% url 'profile' %}">{% trans "Mi cuenta" %}</a>
+                <a href="{% url 'cart' %}">{% trans "Carrito" %}</a>
             </div>
         </nav>
     </header>
 
     <div class="cart-section">
-        <div class="cart-title">{{ title }}</div>
-
-        <h2>Cursos en el carrito</h2>
-        {% if cart_products %}
+        <h1 class="cart-title">{% trans "Tu Carrito de Compras" %}</h1>
+        
+        {% if cart_items %}
+            <h2>{% trans "Cursos en tu carrito" %}</h2>
             <div class="cart-cards">
-            {% for key, product in cart_products.items %}
-                <div class="cart-card">
-                    <div class="cart-card-title">{{ product.name }}</div>
-                    <div class="cart-card-price">Precio: ${{ product.price }}</div>
-                </div>
-            {% endfor %}
+                {% for item in cart_items %}
+                    <div class="cart-card">
+                        <div class="cart-card-title">{{ item.course.title }}</div>
+                        <div class="cart-card-price">${{ item.course.price }}</div>
+                    </div>
+                {% endfor %}
             </div>
-            <form method="post" action="{% url 'cart_removeAll' %}">
+            
+            <hr>
+            <h2>{% blocktrans %}Total: ${{ total_price }}{% endblocktrans %}</h2>
+            
+            <form method="post" action="{% url 'clear_cart' %}">
                 {% csrf_token %}
-                <button type="submit" class="clear-btn">Vaciar carrito</button>
+                <button type="submit" class="clear-btn">{% trans "Limpiar Carrito" %}</button>
             </form>
-            <form method="post" action="{% url 'cart_pay' %}">
+            
+            <form method="post" action="{% url 'checkout' %}">
                 {% csrf_token %}
-                <button type="submit" class="pay-btn">Pagar</button>
+                <button type="submit" class="pay-btn">{% trans "Proceder al Pago" %}</button>
             </form>
         {% else %}
             <div class="empty-cart">
-                Tu carrito está vacío.
+                {% trans "Tu carrito está vacío" %}
             </div>
         {% endif %}
     </div>
 
     <footer class="footer">
-        PyAcademy © 2025 · Contacto: info@pyacademy.com · Síguenos en redes sociales
+        <p>{% trans "PyAcademy © 2025 · Contacto: info@pyacademy.com · Síguenos en redes sociales" %}</p>
     </footer>
 </body>
 </html>

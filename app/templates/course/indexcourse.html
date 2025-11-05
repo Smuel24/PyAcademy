@@ -1,3 +1,4 @@
+{% load i18n %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -66,9 +67,9 @@
         <nav>
             <a href="{% url 'home' %}" class="logo" style="text-decoration:none; color:inherit;">PyAcademy</a>
             <div class="nav-links">
-                <a href="{% url 'categories' %}">Categorías</a>    
-                <a href="{% url 'profile' %}">Mi cuenta</a>
-                <a href="{% url 'cart' %}">Carrito</a>
+                <a href="{% url 'categories' %}">{% trans "Categorías" %}</a>    
+                <a href="{% url 'profile' %}">{% trans "Mi cuenta" %}</a>
+                <a href="{% url 'cart' %}">{% trans "Carrito" %}</a>
             </div>
         </nav>
     </header>
@@ -78,35 +79,35 @@
         
         <!-- Espacio de búsqueda -->
         <form class="search-bar" method="get">
-            <input type="text" name="q" placeholder="Buscar curso..." value="{{ query }}">
-            <button type="submit">Buscar</button>
+            <input type="text" name="q" placeholder="{% trans 'Buscar curso...' %}" value="{{ query }}">
+            <button type="submit">{% trans "Buscar" %}</button>
         </form>
 
         <div class="courses-list">
             {% for course in courses %}
                 <div class="course-card">
                     {% if course.img %}
-                        <img src="{{ course.img.url }}" alt="Portada de {{ course.title }}">
+                        <img src="{{ course.img.url }}" alt="{% trans 'Portada de' %} {{ course.title }}">
                     {% endif %}
                     <div class="course-title">
                         <a href="{% url 'showcourse' course.slug %}" style="text-decoration:none;color:#222;">
                             {{ course.title }}
                         </a>
                     </div>
-                    <div class="course-level">Nivel: {{ course.level }}</div>
-                    <div class="course-category">Categoría: {{ course.category.name }}</div>
+                    <div class="course-level">{% trans "Nivel:" %} {{ course.level }}</div>
+                    <div class="course-category">{% trans "Categoría:" %} {{ course.category.name }}</div>
                     <div class="course-price">${{ course.certification_price }}</div>
                 </div>
             {% empty %}
                 <div style="font-size:1.15em; color:#777; text-align:center; width:100%;">
-                    No se encontraron cursos para tu búsqueda.
+                    {% trans "No se encontraron cursos para tu búsqueda." %}
                 </div>
             {% endfor %}
         </div>
     </section>
 
     <footer class="footer">
-        PyAcademy © 2025 · Contacto: info@pyacademy.com · Síguenos en redes sociales
+        <p>{% trans "PyAcademy © 2025 · Contacto: info@pyacademy.com · Síguenos en redes sociales" %}</p>
     </footer>
 </body>
 </html>

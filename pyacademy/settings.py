@@ -1,3 +1,4 @@
+
 """
 Django settings for pyacademy project.
 
@@ -11,8 +12,13 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+from django.utils.translation import gettext_lazy as _
 import os
+from dotenv import load_dotenv
 
+
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,6 +32,9 @@ SECRET_KEY = 'django-insecure-dxl%&p_1fhc&u4an@=t)61!ed*!sw0f_b_whe&v2i+%7t_&)$#
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+
+
+NEWS_API_KEY = os.getenv('NEWS_API_KEY', '')
 
 ALLOWED_HOSTS = []
 
@@ -46,6 +55,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -104,26 +114,64 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# Internationalization
-# https://docs.djangoproject.com/en/4.2/topics/i18n/
+# ============================================
+# Internationalization (i18n)
+# ============================================
 
-LANGUAGE_CODE = 'en-us'
+USE_I18N = True
+USE_L10N = True
+USE_TZ = True
+
+# Idioma por defecto
+LANGUAGE_CODE = 'es'
+
+# Idiomas soportados
+LANGUAGES = [
+    ('es', _('Español')),
+    ('en', _('English')),
+]
+
+# Rutas donde están los archivos de traducción
+LOCALE_PATHS = [
+    BASE_DIR / 'locale',
+]
+
+# Configuración de cookies de idioma
+LANGUAGE_COOKIE_NAME = 'django_language'
+LANGUAGE_COOKIE_AGE = 15768000  # 6 meses
+
+
+# ============================================
+# Time Zone
+# ============================================
 
 TIME_ZONE = 'UTC'
 
-USE_I18N = True
 
-USE_TZ = True
-
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.2/howto/static-files/
+# ============================================
+# Static Files (CSS, JavaScript, Images)
+# ============================================
 
 STATIC_URL = 'static/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Default primary key field type
-# https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# ============================================
+# Authentication
+# ============================================
+
+LOGIN_URL = '/login/'
+
+
+# ============================================
+# Test Configuration
+# ============================================
+
+TEST_RUNNER = 'django.test.runner.DiscoverRunner'
+
+
+

@@ -1,3 +1,4 @@
+{% load i18n %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -33,45 +34,58 @@
 <body>
     <header>
         <nav>
-            <div class="logo">PyAcademy</div>
+            <a href="{% url 'home' %}" class="logo" style="text-decoration:none; color:inherit;">PyAcademy</a>
             <div class="nav-links">
-                <a href="{% url 'categories' %}">Categorías</a>
-                <a href="{% url 'profile' %}">Mi cuenta</a>
-                <a href="{% url 'cart' %}">Carrito</a>
+                <a href="{% url 'categories' %}">{% trans "Categorías" %}</a>
+                <a href="{% url 'profile' %}">{% trans "Mi cuenta" %}</a>
+                <a href="{% url 'cart' %}">{% trans "Carrito" %}</a>
             </div>
         </nav>
     </header>
+
     <div class="container">
+        {% if success %}
+            <div class="alert-success">{{ success }}</div>
+        {% endif %}
+        
         <div class="course-header">
             {% if course.img %}
-                <img class="course-img" src="{{ course.img.url }}" alt="{{ course.title }}">
+                <img src="{{ course.img.url }}" class="course-img" alt="{% trans 'Portada de' %} {{ course.title }}">
+            {% else %}
+                <img src="{% static 'img/default-course.png' %}" class="course-img" alt="{% trans 'Sin portada' %}">
             {% endif %}
+            
             <div class="course-info">
-                <div class="course-title">{{ course.title }}</div>
+                <h1 class="course-title">{{ course.title }}</h1>
+                
                 <div class="course-meta">
-                    <span><b>Categoría:</b> {{ course.category.name }}</span>
-                    <span><b>Nivel:</b> {{ course.level }}</span>
-                    <span><b>Duración:</b> {{ course.duration }}</span>
-                    <span class="course-price">Precio certificado: ${{ course.certification_price }}</span>
+                    <span><strong>{% trans "Instructor:" %}</strong> {{ course.instructor }}</span>
+                    <span><strong>{% trans "Nivel:" %}</strong> {{ course.level }}</span>
                 </div>
-                <div class="course-desc"><b>Descripción:</b> {{ course.description }}</div>
-                {% if user_has_course %}
-                    <div class="alert-success">
-                        ¡Ya tienes este curso!
-                    </div>
-                    <a href="{% url 'course_content' course.slug %}" class="btn-primary">Ir al contenido</a>
+                
+                <p class="course-price">{% blocktrans with price=course.price %}${{ price }}{% endblocktrans %}</p>
+                
+                <p class="course-desc">{{ course.description }}</p>
+                
+                {% if user.is_authenticated %}
+                    {% if course in user.courses.all %}
+                        <a href="{% url 'course_content' course.slug %}" class="btn-success">{% trans "Ver Contenido" %}</a>
+                    {% else %}
+                        <form method="post" action="{% url 'add_to_cart' course.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-main">{% trans "Agregar al Carrito" %}</button>
+                        </form>
+                    {% endif %}
                 {% else %}
-                    <form action="{% url 'cart_add' course.id %}" method="post">
-                        {% csrf_token %}
-                        <button type="submit" class="btn-main">Agregar al carrito</button>
-                    </form>
+                    <p>{% trans "Debes iniciar sesión para comprar" %}</p>
+                    <a href="{% url 'login' %}" class="btn-primary">{% trans "Iniciar Sesión" %}</a>
                 {% endif %}
             </div>
         </div>
     </div>
-    
+
     <footer class="footer">
-        PyAcademy © 2025 · Contacto: info@pyacademy.com · Síguenos en redes sociales
+        <p>{% trans "PyAcademy © 2025 · Contacto: info@pyacademy.com · Síguenos en redes sociales" %}</p>
     </footer>
 </body>
 </html>

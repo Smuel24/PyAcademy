@@ -1,3 +1,4 @@
+{% load i18n %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -56,38 +57,36 @@
         <nav>
              <a href="{% url 'home' %}" class="logo" style="text-decoration:none; color:inherit;">PyAcademy</a>
             <div class="nav-links">
-                <a href="{% url 'cursos' %}">Cursos</a>
-                <a href="{% url 'categories' %}">Categorías</a>
-                <a href="{% url 'profile' %}">Mi cuenta</a>
-                <a href="{% url 'cart' %}">Carrito</a>
+                <a href="{% url 'cursos' %}">{% trans "Cursos" %}</a>
+                <a href="{% url 'profile' %}">{% trans "Mi cuenta" %}</a>
+                <a href="{% url 'cart' %}">{% trans "Carrito" %}</a>
             </div>
         </nav>
     </header>
 
     <div class="category-section">
-        <div class="category-title">{{ category.name }}</div>
-        <div class="category-description">{{ category.description }}</div>
-
-        <h2>Cursos en esta categoría:</h2>
+        <h1 class="category-title">{{ category.name }}</h1>
+        <p class="category-description">{{ category.description }}</p>
+        
         {% if courses %}
+            <h2>{% trans "Cursos en esta categoría" %}</h2>
             <div class="course-cards">
-            {% for course in courses %}
-                <div class="course-card">
-                    <a class="course-link" href="{% url 'course_detail' slug=course.slug %}">
+                {% for course in courses %}
+                    <div class="course-card">
                         <div class="course-title">{{ course.title }}</div>
-                    </a>
-                    {% if course.certification_price %}<div style="color:#27ae60; margin-bottom:7px;">Precio: ${{ course.certification_price }}</div>{% endif %}
-                    {% if course.short_description %}<div style="color:#444;">{{ course.short_description }}</div>{% endif %}
-                </div>
-            {% endfor %}
+                        <a href="{% url 'course_detail' course.slug %}" class="course-link">{% trans "Ver más" %}</a>
+                    </div>
+                {% endfor %}
             </div>
         {% else %}
-            <div class="empty-courses">No hay cursos en esta categoría.</div>
+            <div class="empty-courses">
+                {% trans "No hay cursos en esta categoría" %}
+            </div>
         {% endif %}
     </div>
 
     <footer class="footer">
-        PyAcademy © 2025 · Contacto: info@pyacademy.com · Síguenos en redes sociales
+        <p>{% trans "PyAcademy © 2025 · Contacto: info@pyacademy.com · Síguenos en redes sociales" %}</p>
     </footer>
 </body>
 </html>

@@ -1,8 +1,9 @@
+{% load i18n %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>PyAcademy - Marketplace de Cursos</title>
+    <title>{% trans "PyAcademy - Marketplace de Cursos" %}</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
     <style>
         body { font-family: 'Roboto', Arial, sans-serif; background: #f5f6fa; color: #222; margin: 0; }
@@ -13,7 +14,11 @@
         .banner { background: #fff; padding: 48px 0 20px 0; text-align: center; }
         .banner h1 { color: #2980b9; font-size: 2.4em; margin-bottom: 14px; }
         .banner p { font-size: 1.22em; margin-bottom: 18px; }
-        .btn-main { background: #27ae60; color: #fff; padding: 13px 28px; border-radius: 7px; text-decoration: none; font-size: 1.1em; }
+        .btn-main { background: #27ae60; color: #fff; padding: 13px 28px; border-radius: 7px; text-decoration: none; font-size: 1.1em; margin-right: 10px; }
+        .btn-api { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; padding: 13px 28px; border-radius: 7px; text-decoration: none; font-size: 1.1em; display: inline-block; transition: transform 0.3s ease, box-shadow 0.3s ease; margin-right: 10px; }
+        .btn-api:hover { transform: scale(1.05); box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4); }
+        .btn-news { background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%); color: #fff; padding: 13px 28px; border-radius: 7px; text-decoration: none; font-size: 1.1em; display: inline-block; transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .btn-news:hover { transform: scale(1.05); box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4); }
         .courses-section { max-width: 1100px; margin: 32px auto; }
         .courses-title { font-size: 1.5em; color: #222; margin-bottom: 24px; }
         .courses-list { display: flex; flex-wrap: wrap; gap: 28px; }
@@ -30,6 +35,7 @@
         @media (max-width: 900px) {
             .courses-list { flex-direction: column; align-items: center; }
             .benefits-list { flex-direction: column; gap: 18px; }
+            .banner-buttons { display: flex; flex-direction: column; gap: 10px; justify-content: center; }
         }
     </style>
 </head>
@@ -38,42 +44,46 @@
         <nav>
             <div class="logo">PyAcademy</div>
             <div class="nav-links">
-                <a href="{% url 'my_courses' %}">Mis cursos</a>
-                <a href="{% url 'categories' %}">Categorías</a>
-                <a href="{% url 'profile' %}">Mi cuenta</a>
-                <a href="{% url 'cart' %}">Carrito</a>
-                <a href="{% url 'login' %}">Iniciar sesión</a>
+                <a href="{% url 'my_courses' %}">{% trans "Mis cursos" %}</a>
+                <a href="{% url 'categories' %}">{% trans "Categorías" %}</a>
+                <a href="{% url 'profile' %}">{% trans "Mi cuenta" %}</a>
+                <a href="{% url 'cart' %}">{% trans "Carrito" %}</a>
+                <a href="{% url 'login' %}">{% trans "Iniciar sesión" %}</a>
             </div>
         </nav>
     </header>
     <section class="banner">
-        <h1>¡Bienvenido a PyAcademy!</h1>
-        <p>El mejor marketplace para aprender Python, desarrollo web y mucho más.</p>
-        <a class="btn-main" href="{% url 'cursos' %}">Explora los cursos</a>
+        <h1>{% trans "¡Bienvenido a PyAcademy!" %}</h1>
+        <p>{% trans "El mejor marketplace para aprender Python, desarrollo web y mucho más." %}</p>
+        <div class="banner-buttons">
+            <a class="btn-main" href="{% url 'cursos' %}">{% trans "Explora los cursos" %}</a>
+            <a class="btn-api" href="{% url 'api_demo' %}"> {% trans "Ver API" %}</a>
+            <a class="btn-news" href="{% url 'news' %}"> {% trans "Noticias Tech" %}</a>
+        </div>
     </section>
 
     <section class="courses-section">
-        <div class="courses-title">Cursos Destacados</div>
+        <div class="courses-title">{% trans "Cursos Destacados" %}</div>
         <div class="courses-list">
             {% for course in courses|slice:":3" %}
                 <div class="course-card">
                     {% if course.img %}
-                        <img src="{{ course.img.url }}" alt="Imagen del curso {{ course.title }}">
+                        <img src="{{ course.img.url }}" alt="{% blocktrans with title=course.title %}Imagen del curso {{ title }}{% endblocktrans %}">
                     {% else %}
-                        <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?fit=crop&w=400&q=80" alt="Curso por defecto">
+                        <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?fit=crop&w=400&q=80" alt="{% trans 'Curso por defecto' %}">
                     {% endif %}
                     <div class="course-title">{{ course.title }}</div>
                     <div class="course-info">
-                        Por {{ course.teacher.get_full_name }} | Nivel: {{ course.level }}
+                        {% blocktrans with teacher=course.teacher.get_full_name level=course.level %}Por {{ teacher }} | Nivel: {{ level }}{% endblocktrans %}
                     </div>
                     <div class="course-price">${{ course.price }}</div>
-                    <a class="course-btn" href="{% url 'course_detail' slug=course.slug %}">Ver Curso</a>
+                    <a class="course-btn" href="{% url 'course_detail' slug=course.slug %}">{% trans "Ver Curso" %}</a>
                 </div>
             {% empty %}
                 <div class="course-card">
-                    <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?fit=crop&w=400&q=80" alt="Curso por defecto">
-                    <div class="course-title">Sin cursos disponibles</div>
-                    <div class="course-info">Pronto habrá más cursos publicados.</div>
+                    <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?fit=crop&w=400&q=80" alt="{% trans 'Curso por defecto' %}">
+                    <div class="course-title">{% trans "Sin cursos disponibles" %}</div>
+                    <div class="course-info">{% trans "Pronto habrá más cursos publicados." %}</div>
                     <div class="course-price">---</div>
                 </div>
             {% endfor %}
@@ -81,17 +91,17 @@
     </section>
 
     <section class="benefits">
-        <h2>¿Por qué elegir PyAcademy?</h2>
+        <h2>{% trans "¿Por qué elegir PyAcademy?" %}</h2>
         <div class="benefits-list">
-            <div>✔ Certificados de finalización</div>
-            <div>✔ Acceso de por vida</div>
-            <div>✔ Comunidad y soporte</div>
-            <div>✔ Profesores expertos</div>
+            <div>{% trans "✔ Certificados de finalización" %}</div>
+            <div>{% trans "✔ Acceso de por vida" %}</div>
+            <div>{% trans "✔ Comunidad y soporte" %}</div>
+            <div>{% trans "✔ Profesores expertos" %}</div>
         </div>
     </section>
 
     <footer class="footer">
-        PyAcademy © 2025 · Contacto: info@pyacademy.com · Síguenos en redes sociales
+        {% blocktrans %}PyAcademy © 2025 · Contacto: info@pyacademy.com · Síguenos en redes sociales{% endblocktrans %}
     </footer>
 </body>
 </html>

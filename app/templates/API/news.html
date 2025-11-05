@@ -1,0 +1,98 @@
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>{% trans "Noticias de Tecnología" %}</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
+    <style>
+        body { font-family: 'Roboto', Arial, sans-serif; background: #f5f6fa; color: #222; margin: 0; }
+        header { background: #2980b9; color: #fff; padding: 16px 0; }
+        nav { display: flex; justify-content: space-between; align-items: center; max-width: 1100px; margin: 0 auto; }
+        .logo { font-size: 1.8em; font-weight: 700; letter-spacing: 2px; }
+        .nav-links a { color: #fff; text-decoration: none; margin: 0 15px; font-size: 1.08em; }
+        .banner { background: #fff; padding: 48px 0 20px 0; text-align: center; }
+        .banner h1 { color: #2980b9; font-size: 2.4em; margin-bottom: 14px; }
+        .banner p { font-size: 1.22em; margin-bottom: 18px; }
+        .back-btn { background: #27ae60; color: #fff; padding: 13px 28px; border-radius: 7px; text-decoration: none; font-size: 1.1em; }
+        .news-section { max-width: 1100px; margin: 32px auto; }
+        .news-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 28px; }
+        .news-card { background: #fff; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); overflow: hidden; transition: all 0.3s ease; }
+        .news-card:hover { transform: translateY(-8px); box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
+        .news-image { width: 100%; height: 200px; object-fit: cover; background: #e0e0e0; }
+        .news-content { padding: 16px; }
+        .news-title { font-weight: bold; margin: 11px 0 6px 0; font-size: 1.15em; color: #2980b9; }
+        .news-description { font-size: 0.95em; color: #555; margin-bottom: 10px; line-height: 1.5; }
+        .news-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 0.85em; color: #999; }
+        .news-source { background: #2980b9; color: #fff; padding: 5px 10px; border-radius: 4px; font-size: 0.8em; font-weight: bold; }
+        .news-btn { background: #2980b9; color: #fff; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 0.95em; display: inline-block; margin-top: 8px; }
+        .news-btn:hover { background: #1a5a8a; }
+        .error { background: #fee; color: #c33; padding: 20px; border-radius: 10px; margin: 20px 0; text-align: center; max-width: 1100px; margin-left: auto; margin-right: auto; }
+        .no-news { text-align: center; padding: 40px; color: #999; }
+        .footer { background: #222; color: #fff; padding: 22px 0; text-align: center; margin-top: 48px; }
+        @media (max-width: 900px) {
+            .news-grid { grid-template-columns: 1fr; }
+            .banner h1 { font-size: 1.8em; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">PyAcademy</div>
+            <div class="nav-links">
+                <a href="{% url 'my_courses' %}">{% trans "Mis cursos" %}</a>
+                <a href="{% url 'categories' %}">{% trans "Categorías" %}</a>
+                <a href="{% url 'profile' %}">{% trans "Mi cuenta" %}</a>
+                <a href="{% url 'cart' %}">{% trans "Carrito" %}</a>
+                <a href="{% url 'login' %}">{% trans "Iniciar sesión" %}</a>
+            </div>
+        </nav>
+    </header>
+
+    <section class="banner">
+        <h1>{% trans "📰 Noticias de Tecnología" %}</h1>
+        <p>{% trans "Mantente actualizado con las últimas novedades del mundo tech" %}</p>
+        <a class="back-btn" href="{% url 'home' %}">{% trans "← Volver al inicio" %}</a>
+    </section>
+
+    <section class="news-section">
+        {% if error %}
+            <div class="error">
+                ❌ {{ error }}
+            </div>
+        {% elif news_list %}
+            <div class="news-grid">
+                {% for article in news_list %}
+                    <div class="news-card">
+                        {% if article.urlToImage %}
+                            <img src="{{ article.urlToImage }}" alt="{{ article.title }}" class="news-image">
+                        {% else %}
+                            <div class="news-image" style="background: linear-gradient(135deg, #2980b9 0%, #27ae60 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 3em;">
+                                📰
+                            </div>
+                        {% endif %}
+                        <div class="news-content">
+                            <div class="news-title">{{ article.title }}</div>
+                            <div class="news-description">{{ article.description|truncatewords:20 }}</div>
+                            <div class="news-meta">
+                                <span class="news-source">{{ article.source.name }}</span>
+                                <span>{{ article.publishedAt|date:"d/m/Y" }}</span>
+                            </div>
+                            <a href="{{ article.url }}" target="_blank" class="news-btn">{% trans "Leer más" %} →</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="no-news">
+                {% trans "No hay noticias disponibles en este momento." %}
+            </div>
+        {% endif %}
+    </section>
+
+    <footer class="footer">
+        {% blocktrans %}PyAcademy © 2025 · Contacto: info@pyacademy.com · Síguenos en redes sociales{% endblocktrans %}
+    </footer>
+</body>
+</html>

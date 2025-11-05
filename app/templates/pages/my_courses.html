@@ -1,8 +1,9 @@
+{% load i18n %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>{{ title }} | PyAcademy</title>
+    <title>{% trans "Mis Cursos" %} | PyAcademy</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
     <style>
         body { font-family: 'Roboto', Arial, sans-serif; background: #f5f6fa; color: #222; margin: 0; }
@@ -26,30 +27,30 @@
         <nav>
             <a href="{% url 'home' %}" class="logo" style="text-decoration:none; color:inherit;">PyAcademy</a>
             <div class="nav-links">
-                <a href="{% url 'categories' %}">Categorías</a>
-                <a href="{% url 'profile' %}">Mi cuenta</a>
-                <a href="{% url 'cart' %}">Carrito</a>
+                <a href="{% url 'categories' %}">{% trans "Categorías" %}</a>
+                <a href="{% url 'profile' %}">{% trans "Mi cuenta" %}</a>
+                <a href="{% url 'cart' %}">{% trans "Carrito" %}</a>
             </div>
         </nav>
     </header>
     <div class="container">
-        <h2>{{ title }}</h2>
+        <h2>{% trans "Mis Cursos" %}</h2>
         {% if cursos %}
             <ul>
             {% for curso in cursos %}
                 <li>
                     <span style="font-weight:bold;">{{ curso.title }}</span>
                     &nbsp;|&nbsp;
-                    <a class="course-link" href="{% url 'course_content' curso.slug %}">Ver contenido</a>
+                    <a class="course-link" href="{% url 'course_content' curso.slug %}">{% trans "Ver contenido" %}</a>
                 </li>
             {% endfor %}
             </ul>
         {% else %}
-            <p>No has comprado ningún curso aún.</p>
+            <p>{% trans "No has comprado ningún curso aún." %}</p>
         {% endif %}
     </div>
     <footer class="footer">
-        PyAcademy © 2025 · Contacto: info@pyacademy.com · Síguenos en redes sociales
+        <p>{% trans "PyAcademy © 2025 · Contacto: info@pyacademy.com · Síguenos en redes sociales" %}</p>
     </footer>
 </body>
 </html>
